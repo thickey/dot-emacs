@@ -25,8 +25,11 @@
             (define-key nrepl-mode-map
               (kbd "}") 'paredit-close-curly)))
 
-(setq nrepl-popup-stacktraces nil)
+(setq nrepl-popup-stacktraces 1)
+
 (add-to-list 'same-window-buffer-names "*nrepl*")
+
+;; nrepl-switch-to-repl-buffer
 
 ;;Auto Complete
 (live-add-pack-lib "ac-nrepl")
