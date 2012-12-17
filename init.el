@@ -197,8 +197,8 @@
 ;;
 ;; "                                                      (live-welcome-message) "
 
-")))
+(set-default-font \"Menlo-13\")")))
 )
 
-(if (not live-disable-zone)
-    (add-hook 'term-setup-hook 'zone))
+;;(if (not live-disable-zone)
+;;    (add-hook 'term-setup-hook 'zone))

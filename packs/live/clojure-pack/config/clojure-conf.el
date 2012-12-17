@@ -7,7 +7,8 @@
 
 (add-hook 'clojure-mode-hook
           (lambda ()
-            (setq buffer-save-without-query t)))
+            (setq buffer-save-without-query t)
+            (linum-mode 1)))
 
 ;;command to align let statements
 ;;To use: M-x align-cljlet

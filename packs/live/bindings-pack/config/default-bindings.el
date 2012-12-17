@@ -85,7 +85,7 @@
 (define-key paredit-mode-map (kbd "C-M-j") 'live-paredit-forward-slurp-sexp-neatly)
 (define-key paredit-mode-map (kbd "C-M-y") 'paredit-forward-barf-sexp)
 (define-key paredit-mode-map (kbd "C-M-z") 'align-cljlet)
-(define-key paredit-mode-map (kbd "M-s") 'paredit-split-sexp)
+;; TH: fuck that (define-key paredit-mode-map (kbd "M-s") 'paredit-split-sexp)
 (define-key paredit-mode-map (kbd "M-j") 'paredit-join-sexps)
 (define-key paredit-mode-map (kbd "M-P") 'live-paredit-previous-top-level-form)
 (define-key paredit-mode-map (kbd "M-N") 'live-paredit-next-top-level-form)
@@ -115,8 +115,9 @@
 (global-set-key (kbd "M-SPC ")   'live-delete-whitespace-except-one)
 
 ;;make ^h delete rather than help
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(define-key paredit-mode-map (kbd "C-h") 'paredit-backward-delete)
+;; TH: fuck that
+;; (global-set-key (kbd "C-h") 'delete-backward-char)
+;; (define-key paredit-mode-map (kbd "C-h") 'paredit-backward-delete)
 
 ;;redefine help shortcut
 (global-set-key (kbd "M-h") 'help-command)
@@ -198,5 +199,7 @@
 (define-key lisp-mode-shared-map (kbd "M-RET") 'live-lisp-describe-thing-at-point)
 (define-key nrepl-mode-map (kbd "M-RET") 'nrepl-doc)
 (define-key nrepl-interaction-mode-map (kbd "M-RET") 'nrepl-doc)
+(define-key nrepl-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
+(define-key paredit-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
 
 (global-set-key (kbd "C-x o") 'win-switch-dispatch)

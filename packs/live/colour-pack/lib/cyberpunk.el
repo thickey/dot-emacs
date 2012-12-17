@@ -166,6 +166,15 @@
      (hl-sexp-face ((t (:background "grey9"))))
 
      (browse-kill-ring-current-entry-face ((t (:background "#333333"))))
+
+     (markdown-header-face ((t (:foreground "deep pink"))))
+     (markdown-header-face-1 ((t (:foreground "deep pink"))))
+     (markdown-header-face-2 ((t (:foreground "medium slate blue"))))
+     (markdown-header-face-3 ((t (:foreground "orange"))))
+     (markdown-header-face-4 ((t (:foreground "gold"))))
+     (markdown-header-face-5 ((t (:foreground "green"))))
+     (markdown-header-face-6 ((t (:foreground "#4c83ff")))) ;; light blue
+     (markdown-reference-face ((t (:foreground "darkgray"))))
      ))
   )
 

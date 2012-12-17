@@ -27,7 +27,7 @@
 
 (setq nrepl-popup-stacktraces 1)
 
-(add-to-list 'same-window-buffer-names "*nrepl*")
+;; TH: fuck that (add-to-list 'same-window-buffer-names "*nrepl*")
 
 ;; nrepl-switch-to-repl-buffer
 

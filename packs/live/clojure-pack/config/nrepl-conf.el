@@ -23,10 +23,11 @@
             (define-key nrepl-mode-map
               (kbd "{") 'paredit-open-curly)
             (define-key nrepl-mode-map
-              (kbd "}") 'paredit-close-curly)))
+              (kbd "}") 'paredit-close-curly)
+            (linum-mode 0)))
 
 (setq nrepl-popup-stacktraces nil)
-(add-to-list 'same-window-buffer-names "*nrepl*")
+;; TH: fuck that (add-to-list 'same-window-buffer-names "*nrepl*")
 
 ;;Auto Complete
 (live-add-pack-lib "ac-nrepl")
@@ -75,3 +76,5 @@
                        (nrepl-current-tooling-session))))
 
 (setq nrepl-port "4555")
+
+(setq nrepl-history-file "~/.nrepl-history.eld")
