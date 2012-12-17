@@ -3,25 +3,6 @@
 ;; This is where everything starts. Do you remember this place?
 ;; It remembers you...
 
-(setq live-ascii-art-logo ";;
-;;     MM\"\"\"\"\"\"\"\"`M
-;;     MM  mmmmmmmM
-;;     M`      MMMM 88d8b.d8b. .d8888b. .d8888b. .d8888b.
-;;     MM  MMMMMMMM 88''88'`88 88'  `88 88'  `\"\" Y8ooooo.
-;;     MM  MMMMMMMM 88  88  88 88.  .88 88.  ...       88
-;;     MM        .M dP  dP  dP `88888P8 '88888P' '88888P'
-;;     MMMMMMMMMMMM
-;;
-;;         M\"\"MMMMMMMM M\"\"M M\"\"MMMMM\"\"M MM\"\"\"\"\"\"\"\"`M
-;;         M  MMMMMMMM M  M M  MMMMM  M MM  mmmmmmmM
-;;         M  MMMMMMMM M  M M  MMMMP  M M`      MMMM
-;;         M  MMMMMMMM M  M M  MMMM' .M MM  MMMMMMMM
-;;         M  MMMMMMMM M  M M  MMP' .MM MM  MMMMMMMM
-;;         M         M M  M M     .dMMM MM        .M
-;;         MMMMMMMMMMM MMMM MMMMMMMMMMM MMMMMMMMMMMM ")
-
-(message (concat "\n\n" live-ascii-art-logo "\n\n"))
-
 (add-to-list 'command-switch-alist
              (cons "--live-safe-mode"
                    (lambda (switch)
@@ -213,7 +194,7 @@
 ;;
 ;; "                                                      (live-welcome-message) "
 
-")))
+(set-default-font \"Menlo-13\")")))
 )
 
 (if (not live-disable-zone)
