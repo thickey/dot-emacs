@@ -151,11 +151,11 @@ Result is a plist, as returned from `nrepl-sync-request:eval'."
                    (meth (nth 0 parts))
                    (classname (nth 1 parts)))
               (propertize meth 'summary classname)))
-          (ac-nrepl-candidates*
-           (ac-nrepl-filtered-clj
-            "(for [class (vals (ns-imports *ns*))
-                   method (.getMethods class)
-                   :when (not (java.lang.reflect.Modifier/isStatic (.getModifiers method)))]
+  (ac-nrepl-candidates*
+   (ac-nrepl-filtered-clj
+    "(for [class (vals (ns-imports *ns*))
+           method (.getMethods class)
+           :when (not (java.lang.reflect.Modifier/isStatic (.getModifiers method)))]
                (str \".\" (.getName method) \"#\" (.getName class)))"))))
 
 (defun ac-nrepl-candidates-static-methods ()
@@ -181,11 +181,11 @@ Result is a plist, as returned from `nrepl-sync-request:eval'."
                             :stdout)))
     (when raw-doc
       (let ((doc
-             (substring-no-properties
-              (replace-regexp-in-string
-               "\r" ""
-               (replace-regexp-in-string
-                "^\\(  \\|-------------------------\r?\n\\)" ""
+  (substring-no-properties
+   (replace-regexp-in-string
+    "\r" ""
+    (replace-regexp-in-string
+     "^\\(  \\|-------------------------\r?\n\\)" ""
                 raw-doc)))))
         (unless (string-match "\\`[ \t\n]*\\'" doc)
           doc)))))
