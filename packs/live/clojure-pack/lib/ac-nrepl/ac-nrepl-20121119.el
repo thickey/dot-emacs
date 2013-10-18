@@ -50,10 +50,6 @@
 ;;
 ;;     (add-hook 'nrepl-mode-hook 'set-auto-complete-as-completion-at-point-function)
 ;;     (add-hook 'nrepl-interaction-mode-hook 'set-auto-complete-as-completion-at-point-function)
-;;
-;; You might consider using ac-nrepl's popup documentation in place of `nrepl-doc':
-;;
-;;     (define-key nrepl-interaction-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
 
 ;;; Code:
 
@@ -63,18 +59,12 @@
 (defun ac-nrepl-available-p ()
   "Return t if nrepl is available for completion, otherwise nil."
   (condition-case nil
-      (not (null (nrepl-current-tooling-session)))
+      (not (null (nrepl-current-session)))
     (error nil)))
-
-(defun ac-nrepl-sync-eval (clj)
-  "Synchronously evaluate CLJ.
-Result is a plist, as returned from `nrepl-send-string-sync'."
-  (nrepl-send-string-sync clj (nrepl-current-ns) (nrepl-current-tooling-session)))
 
 (defun ac-nrepl-candidates* (clj)
   "Return completion candidates produced by evaluating CLJ."
-  (let ((response (plist-get (ac-nrepl-sync-eval (concat "(require 'complete.core) " clj))
-                             :value)))
+  (let ((response (plist-get (nrepl-send-string-sync (concat "(require 'complete.core) " clj) (nrepl-current-ns)) :value)))
     (when response
       (car (read-from-string response)))))
 
@@ -140,7 +130,7 @@ Result is a plist, as returned from `nrepl-send-string-sync'."
   (message ""))
 
 ;;;###autoload
-(add-hook 'nrepl-connected-hook 'ac-nrepl-refresh-class-cache t)
+(add-hook 'nrepl-connected-hook 'ac-nrepl-refresh-class-cache)
 
 (defun ac-nrepl-candidates-all-classes ()
   "Return java method candidates."
@@ -161,8 +151,7 @@ Result is a plist, as returned from `nrepl-send-string-sync'."
   (ac-nrepl-candidates*
    (ac-nrepl-filtered-clj
     "(let [prefix \"%s\"]
-       (if (or (not (.contains prefix \"/\"))
-               (.startsWith prefix \"/\"))
+       (if-not (.contains prefix \"/\")
          '()
           (let [scope (symbol (first (.split prefix \"/\")))]
             (map (fn [memb] (str scope \"/\" memb))
@@ -172,18 +161,15 @@ Result is a plist, as returned from `nrepl-send-string-sync'."
 
 (defun ac-nrepl-documentation (symbol)
   "Return documentation for the given SYMBOL, if available."
-  (let ((doc
-         (substring-no-properties
-          (replace-regexp-in-string
-           "\r" ""
-           (replace-regexp-in-string
-            "^\\(  \\|-------------------------\r?\n\\)" ""
-            (plist-get (ac-nrepl-sync-eval
-                        (format "(try (eval '(clojure.repl/doc %s))
-                               (catch Exception e (println \"\")))" symbol))
-                       :stdout))))))
-    (unless (string-match "\\`[ \t\n]*\\'" doc)
-      doc)))
+  (substring-no-properties
+   (replace-regexp-in-string
+    "\r" ""
+    (replace-regexp-in-string
+     "^\\(  \\|-------------------------\r?\n\\)" ""
+     (plist-get (nrepl-send-string-sync
+                 (format "(try (eval '(clojure.repl/doc %s)) (catch Exception e (println \"\")))" symbol)
+                 (nrepl-current-ns))
+                :stdout)))))
 
 (defun ac-nrepl-symbol-start-pos ()
   "Find the starting position of the symbol at point, unless inside a string."
@@ -267,6 +253,8 @@ Result is a plist, as returned from `nrepl-send-string-sync'."
    ac-nrepl-source-defaults)
   "Auto-complete source for nrepl java static method completion.")
 
+
+
 ;;;###autoload
 (defun ac-nrepl-setup ()
   "Add the nrepl completion source to the front of `ac-sources'.
@@ -278,16 +266,6 @@ This affects only the current buffer."
   (add-to-list 'ac-sources 'ac-source-nrepl-all-classes)
   (add-to-list 'ac-sources 'ac-source-nrepl-java-methods)
   (add-to-list 'ac-sources 'ac-source-nrepl-static-methods))
-
-;;;###autoload
-(defun ac-nrepl-popup-doc ()
-  "A popup alternative to `nrepl-doc'."
-  (interactive)
-  (popup-tip (ac-nrepl-documentation (symbol-at-point))
-             :point (ac-nrepl-symbol-start-pos)
-             :around t
-             :scroll-bar t
-             :margin t))
 
 (provide 'ac-nrepl)
 

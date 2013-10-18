@@ -7,6 +7,7 @@
 
 ;; Line-wrapping
 (set-default 'fill-column 72)
+;;(global-visual-line-mode t)
 
 ;get rid of clutter
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -43,7 +44,7 @@
 (setq linum-format " %d ")
 
 
-
+(setq split-height-threshold 99999)
 
 ;;
 ;; fonts
