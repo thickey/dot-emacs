@@ -491,7 +491,7 @@ are supported:
    "Javadoc for: " 'nrepl-ritz-javadoc-input-handler query))
 
 (define-key nrepl-interaction-mode-map (kbd "C-c b") 'nrepl-ritz-javadoc)
-(define-key nrepl-mode-map (kbd "C-c b") 'nrepl-ritz-javadoc)
+(define-key nrepl-repl-mode-map (kbd "C-c b") 'nrepl-ritz-javadoc)
 
 ;;; codeq def browsing
 (defvar nrepl-codeq-url "datomic:free://localhost:4334/git")
@@ -544,7 +544,7 @@ are supported:
 (define-key
   nrepl-interaction-mode-map (kbd "C-c C-u") 'nrepl-ritz-undefine-symbol)
 (define-key
-  nrepl-mode-map (kbd "C-c C-u") 'nrepl-ritz-undefine-symbol)
+  nrepl-repl-mode-map (kbd "C-c C-u") 'nrepl-ritz-undefine-symbol)
 
 (defun nrepl-ritz-compile-expression (&optional prefix)
   "Compile the current toplevel form."
@@ -821,7 +821,7 @@ Full list of commands:
   (set (make-local-variable 'truncate-lines) t)
   (setq nrepl-session (nrepl-current-session)))
 
-(set-keymap-parent nrepl-dbg-mode-map nrepl-mode-map)
+(set-keymap-parent nrepl-dbg-mode-map nrepl-repl-mode-map)
 
 (nrepl-ritz-define-keys nrepl-dbg-mode-map
   ((kbd "RET") 'nrepl-dbg-default-action)

@@ -6,6 +6,13 @@
 (require 'find-file-in-project)
 (require 'rainbow-mode)
 
+(live-add-pack-lib "dash")
+(require 'dash)
+(live-add-pack-lib "s")
+(require 's)
+(live-add-pack-lib "pkg-info")
+(require 'pkg-info)
+
 (live-load-config-file "backup-dir-conf.el")
 (live-load-config-file "util-fns.el")
 (live-load-config-file "built-in.el")
@@ -25,6 +32,7 @@
 (live-load-config-file "lisp-conf.el")
 (live-load-config-file "win-switch-conf.el")
 (live-load-config-file "zone-conf.el")
+
 
 
 (when (eq system-type 'darwin)

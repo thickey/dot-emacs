@@ -197,9 +197,9 @@
 
 ;; Show documentation/information with M-RET
 (define-key lisp-mode-shared-map (kbd "M-RET") 'live-lisp-describe-thing-at-point)
-(define-key nrepl-mode-map (kbd "M-RET") 'nrepl-doc)
+(define-key nrepl-repl-mode-map (kbd "M-RET") 'nrepl-doc)
 (define-key nrepl-interaction-mode-map (kbd "M-RET") 'nrepl-doc)
-(define-key nrepl-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
+(define-key nrepl-repl-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
 (define-key paredit-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
 
 (global-set-key (kbd "C-x o") 'win-switch-dispatch)
