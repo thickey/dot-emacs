@@ -17,6 +17,8 @@
 ;remove bells
 (setq ring-bell-function 'ignore)
 
+(add-to-list 'default-frame-alist '(font . "Consolas-13"))
+
 ;; TH: this causes the custom-set-faces code to fail when changing font size
 (cond
  ((and (window-system) (eq system-type 'darwin))

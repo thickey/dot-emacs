@@ -197,7 +197,7 @@
 ;;
 ;; "                                                      (live-welcome-message) "
 
-(set-default-font \"Menlo-13\")")))
+(set-default-font \"Consolas-14\")")))
 )
 
 ;;(if (not live-disable-zone)
