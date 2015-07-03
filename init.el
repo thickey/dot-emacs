@@ -3,6 +3,11 @@
 ;; This is where everything starts. Do you remember this place?
 ;; It remembers you...
 
+(setq live-ascii-art-logo ";; Welcome
+;; ")
+
+(message (concat "\n\n" live-ascii-art-logo "\n\n"))
+
 (add-to-list 'command-switch-alist
              (cons "--live-safe-mode"
                    (lambda (switch)
@@ -36,7 +41,7 @@
 ;;
 ;; Alternatively, let us know in the mailing list:
 ;;
-;;    http://groups.google.com/group/overtone
+;;    http://groups.google.com/group/emacs-live
 ;;
 ;; Good luck, and thanks for using Emacs Live!
 ;;
@@ -58,7 +63,7 @@
 
 (setq live-supported-emacsp t)
 
-(when (< emacs-major-version 24)
+(when (version< emacs-version "24.3")
   (setq live-supported-emacsp nil)
   (setq initial-scratch-message (concat "
 ;;                _.-^^---....,,--
@@ -73,7 +78,7 @@
 ;;                     | ;  :|
 ;;            _____.,-#%&$@%#&#~,._____
 ;;
-;; I'm sorry, Emacs Live is only supported on Emacs 24+.
+;; I'm sorry, Emacs Live is only supported on Emacs 24.3+.
 ;;
 ;; You are running: " emacs-version "
 ;;
@@ -91,29 +96,42 @@
   (let* ((old-file (concat (file-name-as-directory "~") ".emacs-old.el")))
     (if (file-exists-p old-file)
       (load-file old-file)
-      (error (concat "Oops - your emacs isn't supported. Emacs Live only works on Emacs 24+ and you're running version: " emacs-version ". Please upgrade your Emacs and try again, or define ~/.emacs-old.el for a fallback")))))
+      (error (concat "Oops - your emacs isn't supported. Emacs Live only works on Emacs 24.3+ and you're running version: " emacs-version ". Please upgrade your Emacs and try again, or define ~/.emacs-old.el for a fallback")))))
+
+(let ((emacs-live-directory (getenv "EMACS_LIVE_DIR")))
+  (when emacs-live-directory
+    (setq user-emacs-directory emacs-live-directory)))
 
 (when live-supported-emacsp
-;; Store live base dirs
-(setq live-root-dir user-emacs-directory)
+;; Store live base dirs, but respect user's choice of `live-root-dir'
+;; when provided.
+(setq live-root-dir (if (boundp 'live-root-dir)
+                          (file-name-as-directory live-root-dir)
+                        (if (file-exists-p (expand-file-name "manifest.el" user-emacs-directory))
+                            user-emacs-directory)
+                        (file-name-directory (or
+                                              load-file-name
+                                              buffer-file-name))))
 
 (setq
  live-tmp-dir      (file-name-as-directory (concat live-root-dir "tmp"))
  live-etc-dir      (file-name-as-directory (concat live-root-dir "etc"))
+ live-pscratch-dir (file-name-as-directory (concat live-tmp-dir  "pscratch"))
  live-lib-dir      (file-name-as-directory (concat live-root-dir "lib"))
  live-packs-dir    (file-name-as-directory (concat live-root-dir "packs"))
  live-autosaves-dir(file-name-as-directory (concat live-tmp-dir  "autosaves"))
  live-backups-dir  (file-name-as-directory (concat live-tmp-dir  "backups"))
+ live-custom-dir   (file-name-as-directory (concat live-etc-dir  "custom"))
  live-load-pack-dir nil
- live-disable-zone nil)
-
-
+ live-disable-zone t)
 
 ;; create tmp dirs if necessary
 (make-directory live-etc-dir t)
 (make-directory live-tmp-dir t)
 (make-directory live-autosaves-dir t)
 (make-directory live-backups-dir t)
+(make-directory live-custom-dir t)
+(make-directory live-pscratch-dir t)
 
 ;; Load manifest
 (load-file (concat live-root-dir "manifest.el"))
@@ -124,16 +142,16 @@
 ;;default packs
 (let* ((pack-names '("foundation-pack"
                      "colour-pack"
-                     "clojure-pack"
                      "lang-pack"
                      "power-pack"
                      "git-pack"
+                     "org-pack"
+                     "clojure-pack"
                      "bindings-pack"))
-       (live-dir (file-name-as-directory "live"))
+       (live-dir (file-name-as-directory "stable"))
        (dev-dir  (file-name-as-directory "dev")))
   (setq live-packs (mapcar (lambda (p) (concat live-dir p)) pack-names) )
   (setq live-dev-pack-list (mapcar (lambda (p) (concat dev-dir p)) pack-names) ))
-
 
 ;; Helper fn for loading live packs
 
@@ -143,7 +161,6 @@
       (message "%s" (concat "This is Emacs Live " live-version))
     live-version))
 
-
 ;; Load `~/.emacs-live.el`. This allows you to override variables such
 ;; as live-packs (allowing you to specify pack loading order)
 ;; Does not load if running in safe mode
@@ -152,7 +169,7 @@
       (load-file pack-file)))
 
 ;; Load all packs - Power Extreme!
-(mapcar (lambda (pack-dir)
+(mapc (lambda (pack-dir)
           (live-load-pack pack-dir))
         (live-pack-dirs))
 
@@ -171,34 +188,28 @@
   (nth (random (length live-welcome-messages)) live-welcome-messages))
 
 (when live-supported-emacsp
-  (setq initial-scratch-message (concat ";;
-;;     MM\"\"\"\"\"\"\"\"`M
-;;     MM  mmmmmmmM
-;;     M`      MMMM 88d8b.d8b. .d8888b. .d8888b. .d8888b.
-;;     MM  MMMMMMMM 88''88'`88 88'  `88 88'  `\"\" Y8ooooo.
-;;     MM  MMMMMMMM 88  88  88 88.  .88 88.  ...       88
-;;     MM        .M dP  dP  dP `88888P8 '88888P' '88888P'
-;;     MMMMMMMMMMMM
-;;
-;;         M\"\"MMMMMMMM M\"\"M M\"\"MMMMM\"\"M MM\"\"\"\"\"\"\"\"`M
-;;         M  MMMMMMMM M  M M  MMMMM  M MM  mmmmmmmM
-;;         M  MMMMMMMM M  M M  MMMMP  M M`      MMMM
-;;         M  MMMMMMMM M  M M  MMMM' .M MM  MMMMMMMM
-;;         M  MMMMMMMM M  M M  MMP' .MM MM  MMMMMMMM
-;;         M         M M  M M     .dMMM MM        .M
-;;         MMMMMMMMMMM MMMM MMMMMMMMMMM MMMMMMMMMMMM  Version " live-version
+  (setq initial-scratch-message (concat live-ascii-art-logo " Version " live-version
                                                                 (if live-safe-modep
                                                                     "
 ;;                                                     --*SAFE MODE*--"
                                                                   "
 ;;"
                                                                   ) "
-;;           http://github.com/overtone/emacs-live
 ;;
 ;; "                                                      (live-welcome-message) "
 
-(set-default-font \"Menlo-13\")")))
+
+(set-default-font \"Menlo-14\")
+
+")))
 )
 
-;;(if (not live-disable-zone)
-;;    (add-hook 'term-setup-hook 'zone))
+(if (not live-disable-zone)
+    (add-hook 'term-setup-hook 'zone))
+
+(if (not custom-file)
+    (setq custom-file (concat live-custom-dir "custom-configuration.el")))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
+(message "\n\n Pack loading completed. Your Emacs is Live...\n\n")
