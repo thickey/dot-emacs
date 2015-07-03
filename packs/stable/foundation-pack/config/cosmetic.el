@@ -16,6 +16,8 @@
 ;remove bells
 (setq ring-bell-function 'ignore)
 
+(global-linum-mode 1)
+
 ;; font setitng functions
 (require 'cl)
 
@@ -38,7 +40,7 @@
    ((eq system-type 'darwin)
     (live-set-default-font font-string))))
 
-(live-set-default-darwin-font "Menlo-12")
+(live-set-default-darwin-font "Menlo-14")
 
 ;; make fringe smaller
 (if (fboundp 'fringe-mode)

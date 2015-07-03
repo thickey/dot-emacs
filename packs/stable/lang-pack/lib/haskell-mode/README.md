@@ -70,23 +70,17 @@ Alternatively, you can also download the `.tar` file via the
 _Download_ link at http://marmalade-repo.org/packages/haskell-mode and
 install the package `.tar`-file via `M-x package-install-file`
 
-Note that in this case you will also need to have a sufficiently
-recent version of `cl-lib.el`, upon which `haskell-mode` depends.
-This is bundled with Emacs 24.3 and later, and a backported version
-for use with older Emacs versions can be obtained from
-[GNU ELPA](http://elpa.gnu.org/packages/cl-lib.html).
-
 #### MELPA
 
-**Development snapshots** can be installed via the
-[MELPA](http://melpa.org) community maintained repository.
+**Unstable snapshots** can be installed via the
+[MELPA](http://melpa.milkbox.net) community maintained repository.
 
 For MELPA the code you need to add is:
 
 ```lisp
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 ```
 

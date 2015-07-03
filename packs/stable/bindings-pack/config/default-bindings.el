@@ -35,31 +35,32 @@
 (global-set-key (kbd "C-c g r") 'git-gutter:revert-hunk)
 
 ;;text manipulation shortcuts
-(global-set-key (kbd "C-c t b")     'untabify-buffer)
-(global-set-key (kbd "C-c t r")     'untabify)
+(global-set-key (kbd "C-c t b") 'untabify-buffer)
+(global-set-key (kbd "C-c t r") 'untabify)
 
 ;;emacs-lisp shortcuts
-(global-set-key (kbd "C-c m s")     'eval-and-replace) ;swap
-(global-set-key (kbd "C-c m b")     'eval-buffer)
-(global-set-key (kbd "C-c m e")     'eval-last-sexp)
-(global-set-key (kbd "C-c m i")     'eval-expression)
-(global-set-key (kbd "C-c m d")     'eval-defun)
-(global-set-key (kbd "C-c m n")     'eval-print-last-sexp)
-(global-set-key (kbd "C-c m r")     'eval-region)
+(global-set-key (kbd "C-c m s") 'eval-and-replace) ;swap
+(global-set-key (kbd "C-c m b") 'eval-buffer)
+(global-set-key (kbd "C-c m e") 'eval-last-sexp)
+(global-set-key (kbd "C-c m i") 'eval-expression)
+(global-set-key (kbd "C-c m d") 'eval-defun)
+(global-set-key (kbd "C-c m n") 'eval-print-last-sexp)
+(global-set-key (kbd "C-c m r") 'eval-region)
 
 (global-set-key (kbd "C-c n e b") 'cider-eval-buffer)
 
 
 ;;funky characters
-(global-set-key (kbd "C-c i l") (lambda () (interactive) (insert "λ")))
-(global-set-key (kbd "C-c i n") (lambda () (interactive) (insert "ℕ")))
-(global-set-key (kbd "C-c i i") (lambda () (interactive) (insert "∞")))
-(global-set-key (kbd "C-c i .") (lambda () (interactive) (insert "×")))
-(global-set-key (kbd "C-c i 0") (lambda () (interactive) (insert "∅")))
-(global-set-key (kbd "C-c i u") (lambda () (interactive) (insert "∪")))
-(global-set-key (kbd "C-c i s") (lambda () (interactive) (insert "♯")))
-(global-set-key (kbd "C-c i f") (lambda () (interactive) (insert "♭")))
-(global-set-key (kbd "C-c i p") (lambda () (interactive) (insert "£")))
+; TH: fuck that
+; (global-set-key (kbd "C-c i l") (lambda () (interactive) (insert "λ")))
+; (global-set-key (kbd "C-c i n") (lambda () (interactive) (insert "ℕ")))
+; (global-set-key (kbd "C-c i i") (lambda () (interactive) (insert "∞")))
+; (global-set-key (kbd "C-c i .") (lambda () (interactive) (insert "×")))
+; (global-set-key (kbd "C-c i 0") (lambda () (interactive) (insert "∅")))
+; (global-set-key (kbd "C-c i u") (lambda () (interactive) (insert "∪")))
+; (global-set-key (kbd "C-c i s") (lambda () (interactive) (insert "♯")))
+; (global-set-key (kbd "C-c i f") (lambda () (interactive) (insert "♭")))
+; (global-set-key (kbd "C-c i p") (lambda () (interactive) (insert "£")))
 
 (global-set-key (kbd "C-c j p") 'quick-jump-go-back)
 (global-set-key (kbd "C-c j b") 'quick-jump-go-back)
@@ -79,10 +80,10 @@
 ;;window and buffer movement
 (global-set-key (kbd "C-c w s") 'swap-windows)
 (global-set-key (kbd "C-c w r") 'rotate-windows)
-(global-set-key (kbd "C-c w p")  'buf-move-up)
-(global-set-key (kbd "C-c w n")  'buf-move-down)
-(global-set-key (kbd "C-c w b")  'buf-move-left)
-(global-set-key (kbd "C-c w f")  'buf-move-right)
+(global-set-key (kbd "C-c w p") 'buf-move-up)
+(global-set-key (kbd "C-c w n") 'buf-move-down)
+(global-set-key (kbd "C-c w b") 'buf-move-left)
+(global-set-key (kbd "C-c w f") 'buf-move-right)
 (global-set-key (kbd "C-c w .") 'shrink-window-horizontally)
 (global-set-key (kbd "C-c w ,") 'enlarge-window-horizontally)
 (global-set-key (kbd "C-c w /") (lambda () (interactive) (enlarge-window -1)))
@@ -98,20 +99,21 @@
 (define-key paredit-mode-map (kbd "C-c l l") 'align-cljlet)
 (define-key paredit-mode-map (kbd "C-c l t") 'fill-paragraph)
 (define-key paredit-mode-map (kbd "C-c l j") 'live-paredit-forward-slurp-sexp-neatly)
-(define-key paredit-mode-map (kbd "C-M-e") 'paredit-backward-barf-sexp)
-(define-key paredit-mode-map (kbd "C-M-s") 'paredit-backward-slurp-sexp)
-(define-key paredit-mode-map (kbd "C-M-j") 'live-paredit-forward-slurp-sexp-neatly)
-(define-key paredit-mode-map (kbd "C-M-y") 'paredit-forward-barf-sexp)
-(define-key paredit-mode-map (kbd "C-M-z") 'align-cljlet)
-;; TH: fuck that (define-key paredit-mode-map (kbd "M-s") 'paredit-split-sexp)
-(define-key paredit-mode-map (kbd "M-j") 'paredit-join-sexps)
-(define-key paredit-mode-map (kbd "M-P") 'live-paredit-previous-top-level-form)
-(define-key paredit-mode-map (kbd "M-N") 'live-paredit-next-top-level-form)
-(define-key paredit-mode-map (kbd "C-M-f") 'live-paredit-forward)
-(define-key paredit-mode-map (kbd "M-q") 'live-paredit-reindent-defun)
-(define-key paredit-mode-map (kbd "M-d") 'live-paredit-forward-kill-sexp)
-(define-key paredit-mode-map (kbd "M-k") 'live-paredit-backward-kill)
-(define-key paredit-mode-map (kbd "M-\\") 'live-paredit-delete-horizontal-space)
+(define-key paredit-mode-map (kbd "C-M-e")   'paredit-backward-barf-sexp)
+(define-key paredit-mode-map (kbd "C-M-s")   'paredit-backward-slurp-sexp)
+(define-key paredit-mode-map (kbd "C-M-j")   'live-paredit-forward-slurp-sexp-neatly)
+(define-key paredit-mode-map (kbd "C-M-y")   'paredit-forward-barf-sexp)
+(define-key paredit-mode-map (kbd "C-M-z")   'align-cljlet)
+(define-key paredit-mode-map (kbd "M-S")     'paredit-split-sexp)
+(define-key paredit-mode-map (kbd "M-s")     'paredit-splice-sexp)
+(define-key paredit-mode-map (kbd "M-j")     'paredit-join-sexps)
+(define-key paredit-mode-map (kbd "M-P")     'live-paredit-previous-top-level-form)
+(define-key paredit-mode-map (kbd "M-N")     'live-paredit-next-top-level-form)
+(define-key paredit-mode-map (kbd "C-M-f")   'live-paredit-forward)
+(define-key paredit-mode-map (kbd "M-q")     'live-paredit-reindent-defun)
+(define-key paredit-mode-map (kbd "M-d")     'live-paredit-forward-kill-sexp)
+(define-key paredit-mode-map (kbd "M-k")     'live-paredit-backward-kill)
+(define-key paredit-mode-map (kbd "M-\\")    'live-paredit-delete-horizontal-space)
 (define-key paredit-mode-map (kbd "C-M-i")   'paredit-forward-down)
 (define-key paredit-mode-map (kbd "C-M-n")   'paredit-forward-up)
 (define-key paredit-mode-map (kbd "C-M-p")   'paredit-backward-down)
@@ -135,7 +137,7 @@
 
 
 ;;browse kill ring (visual paste)
-;; TH: fuck that (global-set-key (kbd "M-y") 'browse-kill-ring)
+(global-set-key (kbd "M-y") 'browse-kill-ring)
 
 ;;make C-] and M-] cut and copy respectively
 (global-set-key (kbd "C-]") 'kill-region)
@@ -146,15 +148,15 @@
 (global-set-key (kbd "C-_")   'undo-tree-undo)
 
 ;;mark current function
-(global-set-key (kbd "C-x C-p")  'mark-defun)
+(global-set-key (kbd "C-x C-p") 'mark-defun)
 
 ;;use delete-horizontal-space to completely nuke all whitespace
-(global-set-key (kbd "M-SPC ")   'live-delete-whitespace-except-one)
+(global-set-key (kbd "M-SPC ") 'live-delete-whitespace-except-one)
 
 ;;make ^h delete rather than help
-;; TH: fuck that
-;; (global-set-key (kbd "C-h") 'delete-backward-char)
-;; (define-key paredit-mode-map (kbd "C-h") 'paredit-backward-delete)
+; TH: fuck that
+; (global-set-key (kbd "C-h") 'delete-backward-char)
+; (define-key paredit-mode-map (kbd "C-h") 'paredit-backward-delete)
 
 ;;redefine help shortcut
 (global-set-key (kbd "M-h") 'help-command)
@@ -199,8 +201,8 @@
 ;; comment region
 (global-set-key (kbd "M-/") 'comment-or-uncomment-region)
 
-(global-set-key (kbd "C-s") 'isearch-forward)
-(global-set-key (kbd "C-r") 'isearch-backward)
+(global-set-key (kbd "C-s")   'isearch-forward)
+(global-set-key (kbd "C-r")   'isearch-backward)
 (global-set-key (kbd "C-M-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-M-r") 'isearch-backward-regexp)
 
@@ -208,12 +210,12 @@
 (global-set-key (kbd "C-x C-i") 'idomenu)
 
 ;; File
-(global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
+(global-set-key (kbd "C-x M-f")   'ido-find-file-other-window)
 (global-set-key (kbd "C-x C-M-f") 'find-file-in-project)
 (global-set-key (kbd "C-x f")     'live-recentf-ido-find-file)
-(global-set-key (kbd "C-x C-r") 'ido-recentf-open)
-(global-set-key (kbd "M-`") 'file-cache-minibuffer-complete)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x C-r")   'ido-recentf-open)
+(global-set-key (kbd "M-`")       'file-cache-minibuffer-complete)
+(global-set-key (kbd "C-x C-b")   'ibuffer)
 
 ;; Window switching.
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1))) ;; back one
@@ -238,7 +240,6 @@
 (define-key lisp-mode-shared-map (kbd "M-RET") 'live-lisp-describe-thing-at-point)
 (define-key cider-repl-mode-map (kbd "M-RET") 'cider-doc)
 (define-key cider-mode-map (kbd "M-RET") 'cider-doc)
-(define-key paredit-mode-map (kbd "C-j") 'nrepl-newline-and-indent)
 
 (global-set-key (kbd "C-x o") 'win-switch-dispatch)
 

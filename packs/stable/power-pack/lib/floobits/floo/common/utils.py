@@ -188,7 +188,6 @@ def parse_url(workspace_url):
     secure = G.SECURE
     owner = None
     workspace_name = None
-    # owner/workspacename
     result = re.match('^([-\@\+\.\w]+)/([-\.\w]+)$', workspace_url)
     if result:
         workspace_url = 'https://' + G.DEFAULT_HOST + '/' + workspace_url
@@ -203,10 +202,9 @@ def parse_url(workspace_url):
     if not port:
         port = G.DEFAULT_PORT
 
-    # Allow /file/...
-    result = re.match('^/([-\@\+\.\w]+)/([-\.\w]+)/?.*$', parsed_url.path)
+    result = re.match('^/([-\@\+\.\w]+)/([-\.\w]+)/?$', parsed_url.path)
     if not result:
-        # Old style URL. Do not remove. People still have these in their persistent.json
+        # Old style URL
         result = re.match('^/r/([-\@\+\.\w]+)/([-\.\w]+)/?$', parsed_url.path)
 
     if result:

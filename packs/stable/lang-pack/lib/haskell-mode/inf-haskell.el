@@ -36,6 +36,7 @@
 (require 'haskell-mode)
 (require 'haskell-decl-scan)
 (require 'haskell-cabal)
+(with-no-warnings (require 'cl))
 
 ;; Dynamically scoped variables.
 (defvar find-tag-marker-ring)
@@ -823,5 +824,9 @@ we load it."
   :keymap inf-haskell-mode-map)
 
 (provide 'inf-haskell)
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
 
 ;;; inf-haskell.el ends here

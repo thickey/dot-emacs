@@ -27,11 +27,10 @@
 
 ;;; Code:
 
-(require 'cl-lib)
 (require 'haskell-compat)
 (require 'haskell-session)
 (require 'haskell-process)
-(require 'haskell-interactive-mode)
+(with-no-warnings (require 'cl))
 
 (defcustom haskell-menu-buffer-name "*haskell-menu*"
   "The name of the Haskell session menu buffer"
@@ -94,7 +93,7 @@ Letters do not insert themselves; instead, they are commands."
                            (if (process-live-p process) (number-to-string id) "-")
                            (if (process-live-p process)
                                (format-time-string "%H:%M:%S"
-                                                   (encode-time (cl-caddr (assoc 'etime (process-attributes id)))
+                                                   (encode-time (caddr (assoc 'etime (process-attributes id)))
                                                                 0 0 0 0 0))
                              "-")
                            (if (process-live-p process)
@@ -150,12 +149,16 @@ Letters do not insert themselves; instead, they are commands."
                                                  (progn (search-forward " ")
                                                         (forward-char -1)
                                                         (point)))))
-         (session (car (cl-remove-if-not (lambda (session)
-                                           (string= (haskell-session-name session)
-                                                    name))
-                                         haskell-sessions))))
+         (session (car (remove-if-not (lambda (session)
+                                        (string= (haskell-session-name session)
+                                                 name))
+                                      haskell-sessions))))
     (switch-to-buffer (haskell-session-interactive-buffer session))))
 
 (provide 'haskell-menu)
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
 
 ;;; haskell-menu.el ends here

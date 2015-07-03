@@ -90,20 +90,6 @@
     ;; move past the '='
     (forward-char 1)))
 
-(defun er/mark-nxml-attribute-inside-string ()
-  "Marks an attribute string inside quotes."
-  (interactive)
-  (font-lock-fontify-buffer)
-  (when (member (get-char-property (point) 'face)
-                '((nxml-attribute-value)))
-    (while (member (get-char-property (point) 'face)
-                   '((nxml-attribute-value)))
-      (backward-char 1))
-    (forward-char 1)
-    (set-mark (point))
-    (forward-sexp 1)
-    (exchange-point-and-mark)))
-
 (defun er/add-nxml-mode-expansions ()
   "Adds Nxml-specific expansions for buffers in nxml-mode"
   (interactive)
@@ -116,7 +102,6 @@
           er/mark-nxml-element
           er/mark-nxml-containing-element
           er/mark-nxml-attribute-string
-          er/mark-nxml-attribute-inner-string
           ;; Steal from html-mode-expansions
           er/mark-html-attribute)
         ;; some normal marks are more hindrance than help:

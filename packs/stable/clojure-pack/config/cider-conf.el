@@ -1,3 +1,6 @@
+(live-add-pack-lib "queue")
+;(require 'queue)
+
 (live-add-pack-lib "cider")
 (require 'cider)
 
@@ -13,7 +16,8 @@
 (add-hook 'cider-repl-mode-hook
           (lambda ()
             (cider-turn-on-eldoc-mode)
-            (paredit-mode 1)))
+            (paredit-mode 1)
+            (linum-mode 0)))
 
 (add-hook 'cider-mode-hook
            (lambda ()
@@ -43,14 +47,3 @@
 (add-hook 'nrepl-connected-hook 'live-nrepl-set-print-length)
 
 (setq nrepl-port "4555")
-
-
-;; Pull in the awesome clj-refactor lib by magnars
-(live-add-pack-lib "clj-refactor")
-(require 'clj-refactor)
-(add-hook 'clojure-mode-hook (lambda ()
-                               (clj-refactor-mode 1)
-                               (cljr-add-keybindings-with-prefix "C-c C-m")))
-
-(define-key clojure-mode-map (kbd "C-:") 'cljr-cycle-stringlike)
-(define-key clojure-mode-map (kbd "C->") 'cljr-cycle-coll)

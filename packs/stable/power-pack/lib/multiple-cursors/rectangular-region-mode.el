@@ -108,7 +108,6 @@ an exceedingly quick way of adding multiple cursors to multiple lines."
   (when rectangular-region-mode
     (rrm/switch-to-multiple-cursors)))
 
-;;;###autoload
 (define-minor-mode rectangular-region-mode
   "A mode for creating a rectangular region to edit"
   nil " rr" rectangular-region-mode-map

@@ -1,6 +1,4 @@
 [![License GPL 3][badge-license]][copying]
-[![MELPA][melpa-badge]][melpa-package]
-[![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
 [![travis][badge-travis]][travis]
 
 # Clojure Mode
@@ -25,7 +23,7 @@ If you're not already using MELPA Stable, add this to your
 ```el
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/"))
+             '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/"))
 (package-initialize)
 ```
 
@@ -35,7 +33,7 @@ of code instead:
 ```el
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 ```
 
@@ -193,10 +191,6 @@ The mode is **deprecated** (more details
 will not be improved/maintained anymore. All `clojure-test-mode` users
 should start using CIDER 0.7+, which features built-in support for `clojure.test`.
 
-## Changelog
-
-An extensive changelog is available [here](CHANGELOG.md).
-
 ## License
 
 Copyright © 2007-2014 Jeffrey Chu, Lennart Staflin, Phil Hagelberg, Bozhidar Batsov
@@ -205,10 +199,6 @@ and [contributors][].
 Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to view it.
 
 [badge-license]: https://img.shields.io/badge/license-GPL_3-green.svg
-[melpa-badge]: http://melpa.org/packages/clojure-mode-badge.svg
-[melpa-stable-badge]: http://stable.melpa.org/packages/clojure-mode-badge.svg
-[melpa-package]: http://melpa.org/#/clojure-mode
-[melpa-stable-package]: http://stable.melpa.org/#/clojure-mode
 [COPYING]: http://www.gnu.org/copyleft/gpl.html
 [badge-travis]: https://travis-ci.org/clojure-emacs/clojure-mode.svg?branch=master
 [travis]: https://travis-ci.org/clojure-emacs/clojure-mode
@@ -216,8 +206,8 @@ Distributed under the GNU General Public License; type <kbd>C-h C-c</kbd> to vie
 [CIDER]: https://github.com/clojure-emacs/cider
 [Leiningen]: http://leiningen.org
 [contributors]: https://github.com/clojure-emacs/clojure-mode/contributors
-[melpa]: http://melpa.org
-[melpa stable]: http://stable.melpa.org
+[melpa]: http://melpa.milkbox.net
+[melpa stable]: http://melpa-stable.milkbox.net
 [clojure-mode-extra-font-locking]: https://github.com/clojure-emacs/clojure-mode/blob/master/clojure-mode-extra-font-locking.el
 [clj-refactor]: https://github.com/clojure-emacs/clj-refactor.el
 [paredit]: http://mumble.net/~campbell/emacs/paredit.html

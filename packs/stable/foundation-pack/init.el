@@ -5,22 +5,14 @@
 (require 'dircolors)
 (require 'smooth-scrolling)
 (require 'buffer-move)
-
-(live-add-pack-lib "find-file-in-project")
 (require 'find-file-in-project)
+
 (live-add-pack-lib "dash")
 (require 'dash)
 (live-add-pack-lib "s")
 (require 's)
 (live-add-pack-lib "epl")
 (require 'epl)
-(live-add-pack-lib "pkg-info")
-(require 'pkg-info)
-
-(live-add-pack-lib "dash")
-(require 'dash)
-(live-add-pack-lib "s")
-(require 's)
 (live-add-pack-lib "pkg-info")
 (require 'pkg-info)
 
@@ -45,7 +37,6 @@
 (live-load-config-file "zone-conf.el")
 (live-load-config-file "monkey-patch.el")
 (live-load-config-file "live.el")
-
 
 
 (when (eq system-type 'darwin)

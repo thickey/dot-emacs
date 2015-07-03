@@ -33,7 +33,7 @@
 ;;; Code:
 
 (require 'syntax)
-(require 'cl-lib)
+(with-no-warnings (require 'cl))
 
 (defvar delete-active-region)
 
@@ -183,7 +183,7 @@ autofill-mode."
       (while (< (point) start)
         (if (= (char-after) ?\t)
             (setq cc (* 8 (+ 1 (/ cc 8))))
-          (cl-incf cc))
+          (incf cc))
         (forward-char))
       cc)))
 
@@ -1092,6 +1092,7 @@ Preserves indentation and removes extra whitespace"
 (provide 'haskell-indentation)
 
 ;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
 ;; tab-width: 8
 ;; End:
 

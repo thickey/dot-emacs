@@ -687,7 +687,7 @@ used as a communication channel."
     (cond
      ((equal type "radio")
       (let ((destination (org-export-resolve-radio-link link info)))
-	(if (not destination) contents
+	(when destination
 	  (format "\\hyperlink%s{%s}{%s}"
 		  (or (org-beamer--element-has-overlay-p link) "")
 		  (org-export-solidify-link-text

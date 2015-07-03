@@ -1,6 +1,6 @@
 ;;; ac-nrepl.el --- auto-complete sources for Clojure using nrepl completions
 
-;; Copyright (C) 2012-2014  Steve Purcell <steve@sanityinc.com>
+;; Copyright (C) 2012  Steve Purcell <steve@sanityinc.com>
 
 ;; Author: Steve Purcell <steve@sanityinc.com>
 ;;         Sam Aaron <samaaron@gmail.com>
@@ -58,8 +58,6 @@
 
 ;;; Code:
 
-(message "Notice: You probably want to use ac-cider instead of ac-nrepl.")
-
 (require 'nrepl-client)
 (require 'cider-interaction)
 (require 'auto-complete)
@@ -72,8 +70,8 @@
 
 (defun ac-nrepl-sync-eval (clj)
   "Synchronously evaluate CLJ.
-Result is a plist, as returned from `nrepl-sync-request:eval'."
-  (nrepl-sync-request:eval clj (cider-current-ns) (nrepl-current-tooling-session)))
+Result is a plist, as returned from `nrepl-send-string-sync'."
+  (nrepl-send-string-sync clj (cider-current-ns) (nrepl-current-tooling-session)))
 
 (defun ac-nrepl-candidates* (clj)
   "Return completion candidates produced by evaluating CLJ."
@@ -124,7 +122,7 @@ Result is a plist, as returned from `nrepl-sync-request:eval'."
 (defun ac-nrepl-refresh-class-cache ()
   "Clear `ac-nrepl-all-classes-cache' and then refill it asynchronously."
   (setq ac-nrepl-all-classes-cache nil)
-  (nrepl-request:eval
+  (nrepl-send-string
    (concat "(require 'complete.core)"
            (ac-nrepl-unfiltered-clj "(concat @complete.core/nested-classes
                                        @complete.core/top-level-classes)"))
@@ -151,11 +149,11 @@ Result is a plist, as returned from `nrepl-sync-request:eval'."
                    (meth (nth 0 parts))
                    (classname (nth 1 parts)))
               (propertize meth 'summary classname)))
-  (ac-nrepl-candidates*
-   (ac-nrepl-filtered-clj
-    "(for [class (vals (ns-imports *ns*))
-           method (.getMethods class)
-           :when (not (java.lang.reflect.Modifier/isStatic (.getModifiers method)))]
+          (ac-nrepl-candidates*
+           (ac-nrepl-filtered-clj
+            "(for [class (vals (ns-imports *ns*))
+                   method (.getMethods class)
+                   :when (not (java.lang.reflect.Modifier/isStatic (.getModifiers method)))]
                (str \".\" (.getName method) \"#\" (.getName class)))"))))
 
 (defun ac-nrepl-candidates-static-methods ()
@@ -181,11 +179,11 @@ Result is a plist, as returned from `nrepl-sync-request:eval'."
                             :stdout)))
     (when raw-doc
       (let ((doc
-  (substring-no-properties
-   (replace-regexp-in-string
-    "\r" ""
-    (replace-regexp-in-string
-     "^\\(  \\|-------------------------\r?\n\\)" ""
+             (substring-no-properties
+              (replace-regexp-in-string
+               "\r" ""
+               (replace-regexp-in-string
+                "^\\(  \\|-------------------------\r?\n\\)" ""
                 raw-doc)))))
         (unless (string-match "\\`[ \t\n]*\\'" doc)
           doc)))))

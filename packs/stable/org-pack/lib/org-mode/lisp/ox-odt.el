@@ -2733,7 +2733,7 @@ INFO is a plist holding contextual information.  See
      ;; link's description.
      ((string= type "radio")
       (let ((destination (org-export-resolve-radio-link link info)))
-	(if (not destination) desc
+	(when destination
 	  (format
 	   "<text:bookmark-ref text:reference-format=\"text\" text:ref-name=\"OrgXref.%s\">%s</text:bookmark-ref>"
 	   (org-export-solidify-link-text

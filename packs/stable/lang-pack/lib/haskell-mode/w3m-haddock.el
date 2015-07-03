@@ -21,10 +21,7 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-(require 'cl-lib)
-(require 'haskell-mode)
-(require 'haskell-font-lock)
-
+(require 'cl)
 (declare-function w3m-buffer-title "w3m")
 (declare-function w3m-browse-url "w3m")
 (defvar w3m-current-url)
@@ -33,7 +30,7 @@
 (add-hook 'w3m-display-hook 'w3m-haddock-display)
 
 (defface w3m-haddock-heading-face
-  '((((class color)) :inherit magit-item-highlight))
+  '((((class color)) :background "#eeeeee"))
   "Face for quarantines."
   :group 'shm)
 
@@ -57,22 +54,22 @@ You can rebind this if you're using hsenv by adding it to your
 (defun haskell-w3m-open-haddock ()
   "Open a haddock page in w3m."
   (interactive)
-  (let* ((entries (cl-remove-if (lambda (s) (string= s ""))
-                                (apply 'append (mapcar (lambda (dir)
-                                                         (split-string (shell-command-to-string (concat "ls -1 " dir))
+  (let* ((entries (remove-if (lambda (s) (string= s ""))
+                             (apply 'append (mapcar (lambda (dir)
+                                                      (split-string (shell-command-to-string (concat "ls -1 " dir))
 
-                                                                       "\n"))
-                                                       haskell-w3m-haddock-dirs))))
+                                                                    "\n"))
+                                                    haskell-w3m-haddock-dirs))))
          (package-dir (ido-completing-read
                        "Package: "
                        entries)))
     (cond
      ((member package-dir entries)
-      (cl-loop for dir in haskell-w3m-haddock-dirs
-               when (w3m-haddock-find-index dir package-dir)
-               do (progn (w3m-browse-url (w3m-haddock-find-index dir package-dir)
-                                         t)
-                         (cl-return))))
+      (loop for dir in haskell-w3m-haddock-dirs
+            when (w3m-haddock-find-index dir package-dir)
+            do (progn (w3m-browse-url (w3m-haddock-find-index dir package-dir)
+                                      t)
+                      (return))))
      (t
       (w3m-browse-url (concat "http://hackage.haskell.org/package/"
                               package-dir)
