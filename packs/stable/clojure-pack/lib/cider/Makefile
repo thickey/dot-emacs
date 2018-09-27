@@ -1,12 +1,14 @@
-EMACS ?= emacs
+export EMACS ?= emacs
 EMACSFLAGS = -L .
 CASK = cask
-VAGRANT = vagrant
 VERSION = $(shell git describe --tags --abbrev=0 | sed 's/^v//')
 PACKAGE_NAME = cider-$(VERSION)
 
 ELS = $(wildcard *.el)
+LINTELS = $(filter-out cider-autoloads.el,$(ELS))
 OBJECTS = $(ELS:.el=.elc)
+
+.PHONY: elpa build version test lint clean elpaclean run-cider
 
 .depend: $(ELS)
 	@echo Compute dependencies
@@ -17,47 +19,47 @@ OBJECTS = $(ELS:.el=.elc)
 
 -include .depend
 
-elpa:
+elpa-$(EMACS):
 	$(CASK) install
 	$(CASK) update
 	touch $@
 
-package:
-	$(CASK) package
-	mkdir -p packages/$(PACKAGE_NAME)
-	cp cider-pkg.el packages/$(PACKAGE_NAME)
-	cp $(ELS) packages/$(PACKAGE_NAME)
-	tar cf packages/$(PACKAGE_NAME).tar -C packages $(PACKAGE_NAME)
+elpa: elpa-$(EMACS)
 
-packageclean:
-	rm cider-pkg.el
-	rm -rf packages/$(PACKAGE_NAME)
-	rm packages/$(PACKAGE_NAME).tar
+build: version elpa
+	$(CASK) build
 
-.PHONY: build
-build : elpa $(OBJECTS)
+version:
+	$(EMACS) --version
 
-.PHONY: test
-test : build
-	$(CASK) exec $(EMACS) --no-site-file --no-site-lisp --batch \
-		$(EMACSFLAGS) \
-		-l test/run-tests
+test: version build
+	$(CASK) exec buttercup -L . -L ./test/utils/
 
-.PHONY: virtual-test
-virtual-test :
-	$(VAGRANT) up
-	$(VAGRANT) ssh -c "make -C /vagrant EMACS=$(EMACS) clean test"
+autoloads:
+	$(CASK) exec $(EMACS) -Q --batch \
+		-l autoload.el \
+		--eval "(let ((generated-autoload-file (expand-file-name \"cider-autoloads.el\"))) \
+                  (update-directory-autoloads (expand-file-name \".\")))"
 
-.PHONY: clean
-clean :
-	rm -f .depend $(OBJECTS)
+lint: version elpa
+	$(CASK) exec $(EMACS) -Q --batch \
+		--eval "(setq enable-local-variables :safe)" \
+		-l elisp-lint.el -f elisp-lint-files-batch \
+		--no-package-format \
+                --no-fill-column \
+		$(LINTELS)
 
-.PHONY: elpaclean
-elpaclean : clean
-	rm -f elpa
+test-all: lint test
+
+clean:
+	rm -f .depend $(OBJECTS) cider-autoloads.el
+
+elpaclean: clean
+	rm -f elpa*
 	rm -rf .cask # Clean packages installed for development
 
-%.elc : %.el
-	$(CASK) exec $(EMACS) --no-site-file --no-site-lisp --batch \
-	$(EMACSFLAGS) \
-	-f batch-byte-compile $<
+run-cider: elpa
+	cask exec $(EMACS) -Q -L . --eval "(require 'cider)"
+
+html:
+	mkdocs build

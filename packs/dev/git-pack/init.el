@@ -1,3 +1,3 @@
 ;;; git-pack/init.el
-(live-add-pack-lib "git-modes")
-(live-load-config-file "magit-conf.el")
+;; TH: fuck that (live-add-pack-lib "git-modes")
+;; TH: fuck that (live-load-config-file "magit-conf.el")

@@ -57,15 +57,15 @@
   (add-hook (intern (concat (symbol-name x) "-mode-hook")) 'enable-paredit-mode)
   (add-hook (intern (concat (symbol-name x) "-mode-hook")) 'rainbow-delimiters-mode))
 
-;; Pull in the awesome clj-refactor lib by magnars
-(live-add-pack-lib "clj-refactor")
-(require 'clj-refactor)
-(add-hook 'clojure-mode-hook (lambda ()
-                               (clj-refactor-mode 1)
-                               (cljr-add-keybindings-with-prefix "C-c C-m")))
+; ;; Pull in the awesome clj-refactor lib by magnars
+; (live-add-pack-lib "clj-refactor")
+; (require 'clj-refactor)
+; (add-hook 'clojure-mode-hook (lambda ()
+;                                (clj-refactor-mode 1)
+;                                (cljr-add-keybindings-with-prefix "C-c C-m")))
 
-(define-key clojure-mode-map (kbd "C-:") 'cljr-cycle-stringlike)
-(define-key clojure-mode-map (kbd "C->") 'cljr-cycle-coll)
+; (define-key clojure-mode-map (kbd "C-:") 'cljr-cycle-stringlike)
+; (define-key clojure-mode-map (kbd "C->") 'cljr-cycle-coll)
 
 (defun live-warn-when-cider-not-connected ()
       (interactive)

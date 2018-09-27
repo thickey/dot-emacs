@@ -183,7 +183,7 @@
   (nth (random (length live-welcome-messages)) live-welcome-messages))
 
 (when live-supported-emacsp
-  (setq initial-scratch-message (concat live-ascii-art-logo " Version " live-version
+  (setq initial-scratch-message (concat " Version " live-version
                                                                 (if live-safe-modep
                                                                     "
 ;;                                                     --*SAFE MODE*--"

@@ -6,7 +6,7 @@
 ;; use blackbored colour theme
 (load-file (concat (live-pack-lib-dir) "cyberpunk.el"))
 (load-file (concat (live-pack-lib-dir) "gandalf.el"))
-(load-file (concat (live-pack-lib-dir) "color-theme-tomorrow.el"))
+;; (load-file (concat (live-pack-lib-dir) "color-theme-tomorrow.el"))
 
 (color-theme-cyberpunk)
 ;; (color-theme-tomorrow-night)

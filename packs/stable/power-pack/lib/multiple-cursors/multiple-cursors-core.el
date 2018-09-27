@@ -459,6 +459,7 @@ They are temporarily disabled when multiple-cursors are active.")
   :group 'multiple-cursors)
 (put 'mc/mode-line 'risky-local-variable t)
 
+;;;###autoload
 (define-minor-mode multiple-cursors-mode
   "Mode while multiple cursors are active."
   nil mc/mode-line mc/keymap
@@ -523,7 +524,7 @@ from being executed if in multiple-cursors-mode."
            (overlay-put cursor 'kill-ring kill-ring)
            (overlay-put cursor 'kill-ring-yank-pointer kill-ring-yank-pointer)))))))
 
-(defvar mc/list-file "~/.emacs.d/.mc-lists.el"
+(defvar mc/list-file (locate-user-emacs-file ".mc-lists.el")
   "The position of the file that keeps track of your preferences
 for running commands with multiple cursors.")
 
@@ -686,6 +687,7 @@ for running commands with multiple cursors.")
                                         py-electric-backspace
                                         c-electric-backspace
                                         org-delete-backward-char
+                                        cperl-electric-backspace
                                         python-indent-dedent-line-backspace
                                         paredit-backward-delete
                                         autopair-backspace
@@ -696,6 +698,7 @@ for running commands with multiple cursors.")
                                         exchange-point-and-mark
                                         cua-set-mark
                                         cua-replace-region
+                                        cua-delete-region
                                         move-end-of-line
                                         beginning-of-line
                                         move-beginning-of-line

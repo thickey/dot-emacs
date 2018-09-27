@@ -31,7 +31,8 @@
      (font-lock-builtin-face ((t (:foreground "#FF6400"))))
      (font-lock-comment-face ((t (:italic t :foreground "#8B8989"))))
      (font-lock-constant-face ((t (:foreground "#4c83ff"))))
-     (font-lock-doc-string-face ((t (:foreground "DarkOrange"))))
+;;     (font-lock-doc-string-face ((t (:foreground "DarkOrange"))))
+     (font-lock-doc-face ((t (:italic t :background "grey10" :foreground "white"))))
      (font-lock-function-name-face ((t (:foreground "deep pink"))))
      (font-lock-keyword-face ((t (:foreground "#FBDE2D"))))
      (font-lock-preprocessor-face ((t (:foreground "gray57"))))
@@ -44,7 +45,7 @@
      (font-lock-variable-name-face ((t (:foreground "#D8FA3C"))))
      (font-lock-warning-face ((t (:bold t :foreground "Pink"))))
 
-     (gui-element ((t (:background "#333333" :foreground "#96CBFE"))))
+     (gui-element ((t (:background "gray10" :foreground "#96CBFE"))))
 ;;     (region ((t (:foreground "black" :background "#7F073F"))))
      (region ((t ( :background "#7F073F"))))
      (mode-line ((t (:background "gray10" :foreground "#4c83ff"))))
@@ -54,29 +55,38 @@
      (isearch ((t (:background "deep pink" :foreground "black"))))
      (isearch-fail ((t (:background "red4"))))
      (lazy-highlight ((t (:background "yellow" :foreground "black"))))
-     (query-replace ((t (:background "#333333"))))
+     (next-error ((t (:background "deep pink" :foreground "black"))))
+     (query-replace ((t (:background "gray10"))))
      (Highline-face ((t (:background "SeaGreen"))))
-     (hl-line ((t (:background "#222222"))))
+     (hl-line ((t (:background "gray10"))))
      (italic ((t (nil))))
      (left-margin ((t (nil))))
      (text-cursor ((t (:background "yellow" :foreground "black"))))
      (toolbar ((t (nil))))
      (underline ((nil (:underline nil))))
-     (vertical-border ((t (:background "black" :foreground "#333333"))))
+     (vertical-border ((t (:background "black" :foreground "gray10"))))
      (zmacs-region ((t (:background "snow" :foreground "ble"))))
 
      (diff-added ((t (:foreground "green"))))
      (diff-removed ((t (:foreground "red"))))
+     (diff-header ((t (:background "gray10" :foreground "#4c83ff"))))
+     (diff-file-header ((t (:background "gray10" :foreground "deep pink"))))
+
 
      (magit-diff-add ((t (:foreground "green"))))
      (magit-diff-del ((t (:foreground "red"))))
-     (magit-item-highlight ((t (:background "gray15"))))
+     (magit-item-highlight ((t (:background "grey15"))))
+     (magit-log-sha1 ((t (:foreground "#8B8989"))))
+     (magit-log-author ((t (:foreground "#4c83ff"))))
      (magit-section-title ((t (:foreground "deep pink"))))
      (magit-diff-hunk-header ((t (:foreground "orange"))))
+     (magit-log-head-label-tags ((t (:background "deep pink" :foreground "black"))))
+     (magit-log-head-label-local ((t (:background "#FF6400" :foreground "black"))))
+     (magit-log-head-label-remote ((t (:background "#61CE3C" :foreground "black"))))
+     (magit-log-head-label-head ((t (:background "yellow" :foreground "black"))))
      (magit-branch ((t (:foreground "gold"))))
 
      (eval-sexp-fu-flash ((t (:background "grey15" :foreground "DeepPink3"))))
-     (nrepl-eval-sexp-fu-flash ((t (:background "grey15" :foreground "DeepPink3"))))
 
      (ac-completion-face ((t (:foreground "darkgray" :underline t))))
      (ac-candidate-face ((t (:background "gray60" :foreground "black"))))
@@ -84,9 +94,9 @@
      (ac-yasnippet-candidate-face ((t (:background "gray60" :foreground "black"))))
      (ac-yasnippet-selection-face ((t (:background "deep pink" :foreground "black"))))
      (popup-isearch-match ((t (:background "black" :foreground "deep pink"))))
-     (popup-tip-face ((t (:background "#333333" :foreground "white"))))
+     (popup-tip-face ((t (:background "gray10" :foreground "white"))))
      (popup-scroll-bar-foreground-face ((t (:background "#0A0A0A"))))
-     (popup-scroll-bar-background-face ((t (:background "#333333"))))
+     (popup-scroll-bar-background-face ((t (:background "gray10"))))
 
      (window-number-face ((t (:background "grey10" :foreground "#4c83ff"))))
 
@@ -105,6 +115,7 @@
      (ido-only-match ((t (:foreground "deep pink" :background "black"))))
      (ido-subdir ((t (:foreground "gray60" :background "black"))))
      (ido-indicator ((t (:foreground "black" :background "deep pink"))))
+     (flx-highlight-face ((t (:foreground "deep pink" :background "black"))))
 
      (match ((t (:foreground "deep pink" :background "blackn"))))
      (minibuffer-prompt ((t (:foreground "#61CE3C" :background "black"))))
@@ -161,24 +172,61 @@
      (erc-timestamp-face ((t (:foreground "dim gray"))))
      (erc-underline-face ((t (:underline t))))
 
-     (vhl/default-face ((t (:background "#333333"))))
+     (vhl/default-face ((t (:background "gray10"))))
      (undo-tree-visualizer-active-branch-face ((t (:foreground "deep pink" :background "black"))))
      (hl-sexp-face ((t (:background "grey9"))))
 
-     (browse-kill-ring-current-entry-face ((t (:background "#333333"))))
+     (browse-kill-ring-current-entry-face ((t (:background "gray10"))))
 
-     (markdown-header-face ((t (:foreground "deep pink"))))
-     (markdown-header-face-1 ((t (:foreground "deep pink"))))
-     (markdown-header-face-2 ((t (:foreground "medium slate blue"))))
-     (markdown-header-face-3 ((t (:foreground "orange"))))
-     (markdown-header-face-4 ((t (:foreground "gold"))))
-     (markdown-header-face-5 ((t (:foreground "green"))))
-     (markdown-header-face-6 ((t (:foreground "#4c83ff")))) ;; light blue
-     (markdown-reference-face ((t (:foreground "darkgray"))))
+     (markdown-link-face ((t (:foreground "#FBDE2D"))))
+     (markdown-url-face ((t (:foreground  "#61CE3C"))))
+     (markdown-bold-face ((t (:foreground "#FF6400"))))
+     (markdown-italic-face ((t (:italic t :foreground "#FF6400"))))
+     (markdown-pre-face ((t (:foreground "#4c83ff"))))
+     (markdown-inline-code-face ((t (:foreground "#4c83ff"))))
+     (markdown-list-face ((t (:foreground "#8B8989"))))
+
+     (git-gutter:modified ((t (:foreground "#4c83ff" :background "gray5"))) )
+     (git-gutter:deleted ((t (:foreground "gray10" :background "gray5"))) )
+     (git-gutter:added ((t (:foreground "#61CE3C" :background "gray5" ))) )
+     (git-gutter:unchanged ((t (:background "grey5" ))) )
+
+     (glsl-type-face ((t (:foreground "#4c83ff"))))
+     (glsl-keyword-face ((t (:foreground "#FBDE2D"))))
+     (glsl-variable-name-face ((t (:foreground "grey57"))))
+     (glsl-builtin-face ((t (:foreground "#FF6400"))))
+
+     (term-bold ((t (:bold t :weight bold))))
+     (term-color-black ((t (:background "black" :foreground "black"))))
+     (term-color-blue ((t (:background "#4c83ff" :foreground "#4c83ff"))))
+     (term-color-cyan ((t (:background "cyan3" :foreground "cyan3"))))
+     (term-color-green ((t (:background "green3" :foreground "green3"))))
+     (term-color-magenta ((t (:background "magenta3" :foreground "magenta3"))))
+     (term-color-red ((t (:background "red3" :foreground "red3"))))
+     (term-color-white ((t (:background "white" :foreground "white"))))
+     (term-color-yellow ((t (:background "yellow3" :foreground "yellow3"))))
+     (term-underline ((t (:underline t))))
+
+     (git-commit-comment-heading-face ((t (:background "black" :foreground "deep pink"))))
+     (git-commit-summary-face ((t (:background "black" :foreground "white"))))
+     (git-commit-branch-face ((t (:background "black" :foreground "#FF6400"))))
+     (git-commit-nonempty-second-line-face ((t (:background "black" :foreground "#FBDE2D"))))
+
+     (sp-wrap-overlay-face ((t (:background "green"))))
+     (sp-pair-overlay-face ((t (:background "grey20"))))
+     (sp-wrap-tag-overlay-face ((t (:background "grey20"))))
+
+     (apropos-symbol ((t (:foreground "deep pink"))))
+     (apropos-function-button ((t (:foreground "#4c83ff"))))
+     (apropos-misc-button ((t (:foreground "yellow3"))))
+     (apropos-variable-button ((t (:foreground "dark green"))))
+
+
+     (cider-error-highlight-face ((t (:background "color-52"))))
+     (cider-repl-err-output-face ((t (:foreground "deeppink"))))
+     (cider-stacktrace-filter-shown-face ((t (:foreground "#4c83ff"))))
      ))
   )
-
-
 
 (custom-set-faces
 

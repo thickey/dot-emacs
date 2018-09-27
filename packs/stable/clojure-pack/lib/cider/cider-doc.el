@@ -1,6 +1,6 @@
 ;;; cider-doc.el --- CIDER documentation functionality -*- lexical-binding: t -*-
 
-;; Copyright © 2014 Jeff Valk
+;; Copyright © 2014-2018 Bozhidar Batsov, Jeff Valk and CIDER contributors
 
 ;; Author: Jeff Valk <jv@jeffvalk.com>
 
@@ -25,11 +25,18 @@
 
 ;;; Code:
 
+(require 'cider-common)
+(require 'subr-x)
+(require 'cider-compat)
 (require 'cider-util)
+(require 'cider-popup)
+(require 'cider-client)
+(require 'cider-grimoire)
+(require 'nrepl-dict)
 (require 'org-table)
 (require 'button)
-(require 'dash)
 (require 'easymenu)
+(require 'cider-browse-spec)
 
 
 ;;; Variables
@@ -39,33 +46,52 @@
   :prefix "cider-doc-"
   :group 'cider)
 
+(defcustom cider-doc-auto-select-buffer t
+  "Controls whether to auto-select the doc popup buffer."
+  :type 'boolean
+  :group 'cider-doc
+  :package-version  '(cider . "0.15.0"))
+
+(declare-function cider-apropos "cider-apropos")
+(declare-function cider-apropos-select "cider-apropos")
+(declare-function cider-apropos-documentation "cider-apropos")
+(declare-function cider-apropos-documentation-select "cider-apropos")
 
 (defvar cider-doc-map
   (let (cider-doc-map)
     (define-prefix-command 'cider-doc-map)
-    (define-key cider-doc-map (kbd "a") 'cider-apropos)
-    (define-key cider-doc-map (kbd "C-a") 'cider-apropos)
-    (define-key cider-doc-map (kbd "A") 'cider-apropos-documentation)
-    (define-key cider-doc-map (kbd "d") 'cider-doc)
-    (define-key cider-doc-map (kbd "C-d") 'cider-doc)
-    (define-key cider-doc-map (kbd "g") 'cider-grimoire)
-    (define-key cider-doc-map (kbd "C-g") 'cider-grimoire)
-    (define-key cider-doc-map (kbd "h") 'cider-grimoire-web)
-    (define-key cider-doc-map (kbd "j") 'cider-javadoc)
-    (define-key cider-doc-map (kbd "C-j") 'cider-javadoc)
+    (define-key cider-doc-map (kbd "a") #'cider-apropos)
+    (define-key cider-doc-map (kbd "C-a") #'cider-apropos)
+    (define-key cider-doc-map (kbd "s") #'cider-apropos-select)
+    (define-key cider-doc-map (kbd "C-s") #'cider-apropos-select)
+    (define-key cider-doc-map (kbd "f") #'cider-apropos-documentation)
+    (define-key cider-doc-map (kbd "C-f") #'cider-apropos-documentation)
+    (define-key cider-doc-map (kbd "e") #'cider-apropos-documentation-select)
+    (define-key cider-doc-map (kbd "C-e") #'cider-apropos-documentation-select)
+    (define-key cider-doc-map (kbd "d") #'cider-doc)
+    (define-key cider-doc-map (kbd "C-d") #'cider-doc)
+    (define-key cider-doc-map (kbd "r") #'cider-grimoire)
+    (define-key cider-doc-map (kbd "C-r") #'cider-grimoire)
+    (define-key cider-doc-map (kbd "w") #'cider-grimoire-web)
+    (define-key cider-doc-map (kbd "C-w") #'cider-grimoire-web)
+    (define-key cider-doc-map (kbd "j") #'cider-javadoc)
+    (define-key cider-doc-map (kbd "C-j") #'cider-javadoc)
     cider-doc-map)
   "CIDER documentation keymap.")
 
-(defvar cider-doc-menu
-  '("Documentation ..."
+(defconst cider-doc-menu
+  '("Documentation"
     ["CiderDoc" cider-doc]
     ["JavaDoc in browser" cider-javadoc]
     ["Grimoire" cider-grimoire]
     ["Grimoire in browser" cider-grimoire-web]
-    ["Search functions/vars" cider-apropos]
-    ["Search documentation" cider-apropos-documentation])
+    ["Search symbols" cider-apropos]
+    ["Search symbols & select" cider-apropos-select]
+    ["Search documentation" cider-apropos-documentation]
+    ["Search documentation & select" cider-apropos-documentation-select]
+    "--"
+    ["Configure Doc buffer" (customize-group 'cider-docview-mode)])
   "CIDER documentation submenu.")
-
 
 
 ;;; cider-docview-mode
@@ -80,7 +106,6 @@
   :type 'list
   :group 'cider-docview-mode
   :package-version '(cider . "0.7.0"))
-
 
 
 ;; Faces
@@ -120,19 +145,28 @@
   "When theme is changed, update `cider-docview-code-background-color'."
   (setq cider-docview-code-background-color (cider-scale-background-color)))
 
+
+(defadvice disable-theme (after cider-docview-adapt-to-theme activate)
+  "When theme is disabled, update `cider-docview-code-background-color'."
+  (setq cider-docview-code-background-color (cider-scale-background-color)))
+
 
 ;; Mode & key bindings
 
 (defvar cider-docview-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "q" 'cider-popup-buffer-quit-function)
-    (define-key map "j" 'cider-docview-javadoc)
-    (define-key map "s" 'cider-docview-source)
-    (define-key map (kbd "<backtab>") 'backward-button)
-    (define-key map (kbd "TAB") 'forward-button)
+    (define-key map "q" #'cider-popup-buffer-quit-function)
+    (define-key map "g" #'cider-docview-grimoire)
+    (define-key map "G" #'cider-docview-grimoire-web)
+    (define-key map "j" #'cider-docview-javadoc)
+    (define-key map "s" #'cider-docview-source)
+    (define-key map (kbd "<backtab>") #'backward-button)
+    (define-key map (kbd "TAB") #'forward-button)
     (easy-menu-define cider-docview-mode-menu map
       "Menu for CIDER's doc mode"
       `("CiderDoc"
+        ["Look up in Grimoire" cider-docview-grimoire]
+        ["Look up in Grimoire (browser)" cider-docview-grimoire-web]
         ["JavaDoc in browser" cider-docview-javadoc]
         ["Jump to source" cider-docview-source]
         "--"
@@ -140,12 +174,19 @@
         ))
     map))
 
-(define-derived-mode cider-docview-mode special-mode "Doc"
+(defvar cider-docview-symbol)
+(defvar cider-docview-javadoc-url)
+(defvar cider-docview-file)
+(defvar cider-docview-line)
+
+(define-derived-mode cider-docview-mode help-mode "Doc"
   "Major mode for displaying CIDER documentation
 
 \\{cider-docview-mode-map}"
   (setq buffer-read-only t)
-  (setq-local truncate-lines t)
+  (setq-local sesman-system 'CIDER)
+  (when cider-special-mode-truncate-lines
+    (setq-local truncate-lines t))
   (setq-local electric-indent-chars nil)
   (setq-local cider-docview-symbol nil)
   (setq-local cider-docview-javadoc-url nil)
@@ -160,17 +201,89 @@
   (interactive)
   (if cider-docview-javadoc-url
       (browse-url cider-docview-javadoc-url)
-    (message "No Javadoc available for %s" cider-docview-symbol)))
+    (error "No Javadoc available for %s" cider-docview-symbol)))
+
+(defun cider-javadoc-handler (symbol-name)
+  "Invoke the nREPL \"info\" op on SYMBOL-NAME if available."
+  (when symbol-name
+    (let* ((info (cider-var-info symbol-name))
+           (url (nrepl-dict-get info "javadoc")))
+      (if url
+          (browse-url url)
+        (user-error "No Javadoc available for %s" symbol-name)))))
+
+(defun cider-javadoc (arg)
+  "Open Javadoc documentation in a popup buffer.
+
+Prompts for the symbol to use, or uses the symbol at point, depending on
+the value of `cider-prompt-for-symbol'.  With prefix arg ARG, does the
+opposite of what that option dictates."
+  (interactive "P")
+  (cider-ensure-connected)
+  (cider-ensure-op-supported "info")
+  (funcall (cider-prompt-for-symbol-function arg)
+           "Javadoc for"
+           #'cider-javadoc-handler))
 
 (defun cider-docview-source ()
   "Open the source for the current symbol, if available."
   (interactive)
   (if cider-docview-file
-      (let ((buffer (and cider-docview-file
-                         (not (cider--tooling-file-p cider-docview-file))
-                         (cider-find-file cider-docview-file))))
-        (cider-jump-to buffer (cons cider-docview-line nil) nil))
-    (message "No source location for %s" cider-docview-symbol)))
+      (if-let* ((buffer (and (not (cider--tooling-file-p cider-docview-file))
+                             (cider-find-file cider-docview-file))))
+          (cider-jump-to buffer (if cider-docview-line
+                                    (cons cider-docview-line nil)
+                                  cider-docview-symbol)
+                         nil)
+        (user-error
+         (substitute-command-keys
+          "Can't find the source because it wasn't defined with `cider-eval-buffer'")))
+    (error "No source location for %s" cider-docview-symbol)))
+
+(defvar cider-buffer-ns)
+
+(declare-function cider-grimoire-lookup "cider-grimoire")
+
+(defun cider-docview-grimoire ()
+  "Return the grimoire documentation for `cider-docview-symbol'."
+  (interactive)
+  (if cider-buffer-ns
+      (cider-grimoire-lookup cider-docview-symbol)
+    (error "%s cannot be looked up on Grimoire" cider-docview-symbol)))
+
+(declare-function cider-grimoire-web-lookup "cider-grimoire")
+
+(defun cider-docview-grimoire-web ()
+  "Open the grimoire documentation for `cider-docview-symbol' in a web browser."
+  (interactive)
+  (if cider-buffer-ns
+      (cider-grimoire-web-lookup cider-docview-symbol)
+    (error "%s cannot be looked up on Grimoire" cider-docview-symbol)))
+
+(defconst cider-doc-buffer "*cider-doc*")
+
+(defun cider-create-doc-buffer (symbol)
+  "Populates *cider-doc* with the documentation for SYMBOL."
+  (when-let* ((info (cider-var-info symbol)))
+    (cider-docview-render (cider-make-popup-buffer cider-doc-buffer nil 'ancillary) symbol info)))
+
+(defun cider-doc-lookup (symbol)
+  "Look up documentation for SYMBOL."
+  (if-let* ((buffer (cider-create-doc-buffer symbol)))
+      (cider-popup-buffer-display buffer cider-doc-auto-select-buffer)
+    (user-error "Symbol %s not resolved" symbol)))
+
+(defun cider-doc (&optional arg)
+  "Open Clojure documentation in a popup buffer.
+
+Prompts for the symbol to use, or uses the symbol at point, depending on
+the value of `cider-prompt-for-symbol'.  With prefix arg ARG, does the
+opposite of what that option dictates."
+  (interactive "P")
+  (cider-ensure-connected)
+  (funcall (cider-prompt-for-symbol-function arg)
+           "Doc for"
+           #'cider-doc-lookup))
 
 
 ;;; Font Lock and Formatting
@@ -266,6 +379,17 @@ Tables are marked to be ignored by line wrap."
         (cider-docview-format-tables buffer) ; may contain literals, emphasis
         (cider-docview-wrap-text buffer))))) ; ignores code, table blocks
 
+(defun cider--abbreviate-file-protocol (file-with-protocol)
+  "Abbreviate the file-path in `file:/path/to/file' of FILE-WITH-PROTOCOL."
+  (if (string-match "\\`file:\\(.*\\)" file-with-protocol)
+      (let ((file (match-string 1 file-with-protocol))
+            (proj-dir (clojure-project-dir)))
+        (if (and proj-dir
+                 (file-in-directory-p file proj-dir))
+            (file-relative-name file proj-dir)
+          file))
+    file-with-protocol))
+
 (defun cider-docview-render-info (buffer info)
   "Emit into BUFFER formatted INFO for the Clojure or Java symbol."
   (let* ((ns      (nrepl-dict-get info "ns"))
@@ -274,23 +398,29 @@ Tables are marked to be ignored by line wrap."
          (depr    (nrepl-dict-get info "deprecated"))
          (macro   (nrepl-dict-get info "macro"))
          (special (nrepl-dict-get info "special-form"))
-         (forms   (nrepl-dict-get info "forms-str"))
-         (args    (nrepl-dict-get info "arglists-str"))
-         (doc     (nrepl-dict-get info "doc"))
+         (forms   (when-let* ((str (nrepl-dict-get info "forms-str")))
+                    (split-string str "\n")))
+         (args    (when-let* ((str (nrepl-dict-get info "arglists-str")))
+                    (split-string str "\n")))
+         (doc     (or (nrepl-dict-get info "doc")
+                      "Not documented."))
          (url     (nrepl-dict-get info "url"))
          (class   (nrepl-dict-get info "class"))
          (member  (nrepl-dict-get info "member"))
          (javadoc (nrepl-dict-get info "javadoc"))
          (super   (nrepl-dict-get info "super"))
          (ifaces  (nrepl-dict-get info "interfaces"))
+         (spec    (nrepl-dict-get info "spec"))
          (clj-name  (if ns (concat ns "/" name) name))
-         (java-name (if member (concat class "/" member) class)))
+         (java-name (if member (concat class "/" member) class))
+         (see-also (nrepl-dict-get info "see-also")))
+    (cider--help-setup-xref (list #'cider-doc-lookup (format "%s/%s" ns name)) nil buffer)
     (with-current-buffer buffer
       (cl-flet ((emit (text &optional face)
                       (insert (if face
                                   (propertize text 'font-lock-face face)
-                                text))
-                      (newline)))
+                                text)
+                              "\n")))
         (emit (if class java-name clj-name) 'font-lock-function-name-face)
         (when super
           (emit (concat "   Extends: " (cider-font-lock-as 'java-mode super))))
@@ -299,39 +429,74 @@ Tables are marked to be ignored by line wrap."
           (dolist (iface (cdr ifaces))
             (emit (concat "            "(cider-font-lock-as 'java-mode iface)))))
         (when (or super ifaces)
-          (newline))
-        (when (or forms args)
-          (emit (cider-font-lock-as-clojure (or forms args))))
-        (when (or special macro)
-          (emit (if special "Special Form" "Macro") 'font-lock-comment-face))
+          (insert "\n"))
+        (when-let* ((forms (or forms args)))
+          (dolist (form forms)
+            (insert " ")
+            (emit (cider-font-lock-as-clojure form))))
+        (when special
+          (emit "Special Form" 'font-lock-keyword-face))
+        (when macro
+          (emit "Macro" 'font-lock-variable-name-face))
         (when added
           (emit (concat "Added in " added) 'font-lock-comment-face))
         (when depr
-          (emit (concat "Deprecated in " depr) 'font-lock-comment-face))
-        (when doc
-          (if class
-              (cider-docview-render-java-doc (current-buffer) doc)
-            (emit (concat "  " doc))))
+          (emit (concat "Deprecated in " depr) 'font-lock-keyword-face))
+        (if class
+            (cider-docview-render-java-doc (current-buffer) doc)
+          (emit (concat "  " doc)))
         (when url
-          (newline)
-          (insert "  Please see ")
+          (insert "\n  Please see ")
           (insert-text-button url
                               'url url
                               'follow-link t
                               'action (lambda (x)
                                         (browse-url (button-get x 'url))))
-          (newline))
+          (insert "\n"))
         (when javadoc
-          (newline)
-          (newline)
-          (insert "For additional documentation, see the ")
+          (insert "\n\nFor additional documentation, see the ")
           (insert-text-button "Javadoc"
                               'url javadoc
                               'follow-link t
                               'action (lambda (x)
                                         (browse-url (button-get x 'url))))
-          (insert ".")
-          (newline))
+          (insert ".\n"))
+        (insert "\n")
+        (when spec
+          (emit "Spec:" 'font-lock-function-name-face)
+          (insert (cider-browse-spec--pprint-indented spec))
+          (insert "\n\n")
+          (insert-text-button "Browse spec"
+                              'follow-link t
+                              'action (lambda (_)
+                                        (cider-browse-spec (format "%s/%s" ns name))))
+          (insert "\n\n"))
+        (if cider-docview-file
+            (progn
+              (insert (propertize (if class java-name clj-name)
+                                  'font-lock-face 'font-lock-function-name-face)
+                      " is defined in ")
+              (insert-text-button (cider--abbreviate-file-protocol cider-docview-file)
+                                  'follow-link t
+                                  'action (lambda (_x)
+                                            (cider-docview-source)))
+              (insert "."))
+          (insert "Definition location unavailable."))
+        (when see-also
+          (insert "\n\n Also see: ")
+          (mapc (lambda (ns-sym)
+                  (let* ((ns-sym-split (split-string ns-sym "/"))
+                         (see-also-ns (car ns-sym-split))
+                         (see-also-sym (cadr ns-sym-split))
+                         ;; if the var belongs to the same namespace,
+                         ;; we omit the namespace to save some screen space
+                         (symbol (if (equal ns see-also-ns) see-also-sym ns-sym)))
+                    (insert-text-button symbol
+                                        'type 'help-xref
+                                        'help-function (apply-partially #'cider-doc-lookup symbol)))
+                  (insert " "))
+                see-also))
+        (cider--doc-make-xrefs)
         (let ((beg (point-min))
               (end (point-max)))
           (nrepl-dict-map (lambda (k v)
@@ -339,15 +504,18 @@ Tables are marked to be ignored by line wrap."
                           info)))
       (current-buffer))))
 
+(declare-function cider-set-buffer-ns "cider-mode")
 (defun cider-docview-render (buffer symbol info)
   "Emit into BUFFER formatted documentation for SYMBOL's INFO."
   (with-current-buffer buffer
     (let ((javadoc (nrepl-dict-get info "javadoc"))
           (file (nrepl-dict-get info "file"))
           (line (nrepl-dict-get info "line"))
+          (ns (nrepl-dict-get info "ns"))
           (inhibit-read-only t))
       (cider-docview-mode)
 
+      (cider-set-buffer-ns ns)
       (setq-local cider-docview-symbol symbol)
       (setq-local cider-docview-javadoc-url javadoc)
       (setq-local cider-docview-file file)

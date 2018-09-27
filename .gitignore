@@ -24,3 +24,5 @@ tramp
 tmp/*
 .smex-items
 swank/*
+ido.last
+.#ido.last
