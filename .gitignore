@@ -19,3 +19,7 @@ build/
 elpa
 network-security.data
 abbrev_defs
+.smex-items
+ido.last
+org-clock-save.el
+recentf

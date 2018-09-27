@@ -37,7 +37,7 @@
          php-mode
          rvm
          smex
-         solarized-theme
+         cyberpunk-theme
          writegood-mode
          yaml-mode
          ess
@@ -208,7 +208,7 @@
 
 ;;; colortheme
 (if window-system
-    (load-theme 'solarized-light t)
+    (load-theme 'cyberpunk t)
     (load-theme 'wombat t))
 
 ;;; org-mode
@@ -274,7 +274,7 @@ by using nxml's indentation rules."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (nhexl-mode yaml-mode writegood-mode solarized-theme smex rvm powershell php-mode pbcopy paredit nodejs-repl marmalade markdown-mode htmlize haskell-mode graphviz-dot-mode go-eldoc go-autocomplete flycheck ess erlang csharp-mode coffee-mode cider autopair auto-virtualenv ac-slime))))
+    (nhexl-mode yaml-mode writegood-mode cyberpunk-theme smex rvm powershell php-mode pbcopy paredit nodejs-repl marmalade markdown-mode htmlize haskell-mode graphviz-dot-mode go-eldoc go-autocomplete flycheck ess erlang csharp-mode coffee-mode cider autopair auto-virtualenv ac-slime))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
