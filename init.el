@@ -1,215 +1,283 @@
-;; Emacs LIVE
-;;
-;; This is where everything starts. Do you remember this place?
-;; It remembers you...
+;;; user defaults
+(setq user-full-name "Tom Hickey")
+(setq user-mail-address "thickey@gmail.com")
 
-(setq live-ascii-art-logo ";; Welcome
-;; ")
+;;; environment
+(setenv "PATH" (concat "~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/sbin:" (getenv "PATH")))
+(setq exec-path (append '("~/bin" "/opt/local/bin" "/opt/local/sbin" "/usr/local/bin" "/sbin") exec-path))
+(require 'cl)
 
-(message (concat "\n\n" live-ascii-art-logo "\n\n"))
+;;; package management
+(load "package")
+(package-initialize)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(add-to-list 'command-switch-alist
-             (cons "--live-safe-mode"
-                   (lambda (switch)
-                     nil)))
+(defvar thickey/packages '(ac-slime
+         auto-complete
+         autopair
+         clojure-mode
+         coffee-mode
+         csharp-mode
+         erlang
+         flycheck
+         go-autocomplete
+         go-eldoc
+         go-mode
+         graphviz-dot-mode
+         haskell-mode
+         htmlize
+         markdown-mode
+         marmalade
+         nodejs-repl
+         org
+         paredit
+         php-mode
+         rvm
+         smex
+         solarized-theme
+         writegood-mode
+         yaml-mode
+         ess
+         cider
+         pbcopy
+         python
+         auto-virtualenv
+         powershell
+         graphviz-dot-mode
+         go-mode
+         nhexl-mode
+         )
+  "default packages")
 
-(setq live-safe-modep
-      (if (member "--live-safe-mode" command-line-args)
-          "debug-mode-on"
-        nil))
+(defun thickey/packages-installed-p ()
+  (loop for pkg in thickey/packages
+        when (not (package-installed-p pkg)) do (return nil)
+        finally (return t)))
 
-(setq initial-scratch-message "
-;; I'm sorry, Emacs Live failed to start correctly.
-;; Hopefully the issue will be simple to resolve.
-;;
-;; First up, could you try running Emacs Live in safe mode:
-;;
-;;    emacs --live-safe-mode
-;;
-;; This will only load the default packs. If the error no longer occurs
-;; then the problem is probably in a pack that you are loading yourself.
-;; If the problem still exists, it may be a bug in Emacs Live itself.
-;;
-;; In either case, you should try starting Emacs in debug mode to get
-;; more information regarding the error:
-;;
-;;    emacs --debug-init
-;;
-;; Please feel free to raise an issue on the Gihub tracker:
-;;
-;;    https://github.com/overtone/emacs-live/issues
-;;
-;; Alternatively, let us know in the mailing list:
-;;
-;;    http://groups.google.com/group/emacs-live
-;;
-;; Good luck, and thanks for using Emacs Live!
-;;
-;;                _.-^^---....,,--
-;;            _--                  --_
-;;           <          SONIC         >)
-;;           |       BOOOOOOOOM!       |
-;;            \._                   _./
-;;               ```--. . , ; .--'''
-;;                     | |   |
-;;                  .-=||  | |=-.
-;;                  `-=#$%&%$#=-'
-;;                     | ;  :|
-;;            _____.,-#%&$@%#&#~,._____
-;;      May these instructions help you raise
-;;                  Emacs Live
-;;                from the ashes
-")
+(unless (thickey/packages-installed-p)
+  (message "%s" "Refreshing package database...")
+  (package-refresh-contents)
+  (dolist (pkg thickey/packages)
+    (when (not (package-installed-p pkg))
+      (package-install pkg))))
 
-(setq live-supported-emacsp t)
+;;; vendor dir
+(defvar thickey/vendor-dir (expand-file-name "vendor" user-emacs-directory))
+(add-to-list 'load-path thickey/vendor-dir)
 
-(when (version< emacs-version "24.3")
-  (setq live-supported-emacsp nil)
-  (setq initial-scratch-message (concat "
-;;                _.-^^---....,,--
-;;            _--                  --_
-;;           <          SONIC         >)
-;;           |       BOOOOOOOOM!       |
-;;            \._                   _./
-;;               ```--. . , ; .--'''
-;;                     | |   |
-;;                  .-=||  | |=-.
-;;                  `-=#$%&%$#=-'
-;;                     | ;  :|
-;;            _____.,-#%&$@%#&#~,._____
-;;
-;; I'm sorry, Emacs Live is only supported on Emacs 24.3+.
-;;
-;; You are running: " emacs-version "
-;;
-;; Please upgrade your Emacs for full compatibility.
-;;
-;; Latest versions of Emacs can be found here:
-;;
-;; OS X GUI     - http://emacsformacosx.com/
-;; OS X Console - via homebrew (http://mxcl.github.com/homebrew/)
-;;                brew install emacs
-;; Windows      - http://alpha.gnu.org/gnu/emacs/windows/
-;; Linux        - Consult your package manager or compile from source
+(dolist (project (directory-files thickey/vendor-dir t "\\w+"))
+  (when (file-directory-p project)
+    (add-to-list 'load-path project)))
 
-"))
-  (let* ((old-file (concat (file-name-as-directory "~") ".emacs-old.el")))
-    (if (file-exists-p old-file)
-      (load-file old-file)
-      (error (concat "Oops - your emacs isn't supported. Emacs Live only works on Emacs 24.3+ and you're running version: " emacs-version ". Please upgrade your Emacs and try again, or define ~/.emacs-old.el for a fallback")))))
+;;; startup settings
+(setq inhibit-splash-screen t
+      initial-scratch-message nil
+      initial-major-mode 'org-mode)
 
-(let ((emacs-live-directory (getenv "EMACS_LIVE_DIR")))
-  (when emacs-live-directory
-    (setq user-emacs-directory emacs-live-directory)))
+;; (scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(delete-selection-mode t)
+(transient-mark-mode t)
+(setq x-select-enable-clipboard t)
+(setq column-number-mode t)
+(setq-default indicate-empty-lines t)
+(when (not indicate-empty-lines)
+  (toggle-indicate-empty-lines))
+(setq tab-width 2 indent-tabs-mode nil)
+(setq make-backup-files nil)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq echo-keystrokes 0.1
+      use-dialog-box nil
+      visible-bell t)
+(show-paren-mode t)
 
-(when live-supported-emacsp
-;; Store live base dirs, but respect user's choice of `live-root-dir'
-;; when provided.
-(setq live-root-dir (if (boundp 'live-root-dir)
-                          (file-name-as-directory live-root-dir)
-                        (if (file-exists-p (expand-file-name "manifest.el" user-emacs-directory))
-                            user-emacs-directory)
-                        (file-name-directory (or
-                                              load-file-name
-                                              buffer-file-name))))
+;;; smex
+(setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
-(setq
- live-tmp-dir      (file-name-as-directory (concat live-root-dir "tmp"))
- live-etc-dir      (file-name-as-directory (concat live-root-dir "etc"))
- live-pscratch-dir (file-name-as-directory (concat live-tmp-dir  "pscratch"))
- live-lib-dir      (file-name-as-directory (concat live-root-dir "lib"))
- live-packs-dir    (file-name-as-directory (concat live-root-dir "packs"))
- live-autosaves-dir(file-name-as-directory (concat live-tmp-dir  "autosaves"))
- live-backups-dir  (file-name-as-directory (concat live-tmp-dir  "backups"))
- live-custom-dir   (file-name-as-directory (concat live-etc-dir  "custom"))
- live-load-pack-dir nil
- live-disable-zone t)
+;;; recent
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
-;; create tmp dirs if necessary
-(make-directory live-etc-dir t)
-(make-directory live-tmp-dir t)
-(make-directory live-autosaves-dir t)
-(make-directory live-backups-dir t)
-(make-directory live-custom-dir t)
-(make-directory live-pscratch-dir t)
-
-;; Load manifest
-(load-file (concat live-root-dir "manifest.el"))
-
-;; load live-lib
-(load-file (concat live-lib-dir "live-core.el"))
-
-;;default packs
-(let* ((pack-names '("foundation-pack"
-                     "colour-pack"
-                     "lang-pack"
-                     "power-pack"
-                     "git-pack"
-                     "org-pack"
-                     "clojure-pack"
-                     "bindings-pack"))
-       (live-dir (file-name-as-directory "stable"))
-       (dev-dir  (file-name-as-directory "dev")))
-  (setq live-packs (mapcar (lambda (p) (concat live-dir p)) pack-names) )
-  (setq live-dev-pack-list (mapcar (lambda (p) (concat dev-dir p)) pack-names) ))
-
-;; Helper fn for loading live packs
-
-(defun live-version ()
+;;; ido
+(ido-mode t)
+(setq ido-enable-flex-matching t
+      ido-use-virtual-buffers t)
+(defun recentf-ido-find-file ()
+  "Find a recent file using Ido."
   (interactive)
-  (if (called-interactively-p 'interactive)
-      (message "%s" (concat "This is Emacs Live " live-version))
-    live-version))
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
+(global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
+(global-set-key (kbd "C-x f")   'recentf-ido-find-file)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 
-;; Load `~/.emacs-live.el`. This allows you to override variables such
-;; as live-packs (allowing you to specify pack loading order)
-;; Does not load if running in safe mode
-(let* ((pack-file (concat (file-name-as-directory "~") ".emacs-live.el")))
-  (if (and (file-exists-p pack-file) (not live-safe-modep))
-      (load-file pack-file)))
+;;; tmp files
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
-;; Load all packs - Power Extreme!
-(mapc (lambda (pack-dir)
-          (live-load-pack pack-dir))
-        (live-pack-dirs))
+;;; autopair
+(require 'autopair)
 
-(setq live-welcome-messages
-      (if (live-user-first-name-p)
-          (list (concat "Hello " (live-user-first-name) ", somewhere in the world the sun is shining for you right now.")
-                (concat "Hello " (live-user-first-name) ", it's lovely to see you again. I do hope that you're well.")
-                (concat (live-user-first-name) ", turn your head towards the sun and the shadows will fall behind you.")
-                )
-        (list  "Hello, somewhere in the world the sun is shining for you right now."
-               "Hello, it's lovely to see you again. I do hope that you're well."
-               "Turn your head towards the sun and the shadows will fall behind you.")))
+;;; autocomplete
+(require 'auto-complete-config)
+(ac-config-default)
+
+;;; indentation and buffer
+(defun untabify-buffer ()
+  (interactive)
+  (untabify (point-min) (point-max)))
+
+(defun indent-buffer ()
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun cleanup-buffer ()
+  "Perform a bunch of operations on the whitespace content of a buffer."
+  (interactive)
+  (indent-buffer)
+  (untabify-buffer)
+  (delete-trailing-whitespace))
+
+(defun cleanup-region (beg end)
+  "Remove tmux artifacts from region."
+  (interactive "r")
+  (dolist (re '("\\\\│\·*\n" "\W*│\·*"))
+    (replace-regexp re "" nil beg end)))
+
+(global-set-key (kbd "C-x M-t") 'cleanup-region)
+(global-set-key (kbd "C-c n") 'cleanup-buffer)
+
+;; (setq-default show-trailing-whitespace t)
+
+;;; flyspell
+(setq flyspell-issue-welcome-flag nil)
+(if (eq system-type 'darwin)
+    (setq-default ispell-program-name "/usr/local/bin/aspell")
+  (setq-default ispell-program-name "/usr/bin/aspell"))
+(setq-default ispell-list-command "list")
+
+;;; mode hooks
+(add-to-list 'auto-mode-alist '("\\.zsh$" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.gitconfig$" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+
+(defun coffee-custom ()
+  "coffee-mode-hook"
+  (make-local-variable 'tab-width)
+  (set 'tab-width 2))
+
+(add-hook 'coffee-mode-hook 'coffee-custom)
+
+(defun js-custom ()
+  "js-mode-hook"
+  (setq js-indent-level 2))
+
+(add-hook 'js-mode-hook 'js-custom)
+
+;;; markdown
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (visual-line-mode t)
+            (writegood-mode t)
+            (flyspell-mode t)))
+;; (setq markdown-command "pandoc --smart -f markdown -t html")
+;; (setq markdown-css-paths `(,(expand-file-name "markdown.css" thickey/vendor-dir)))
+
+(defun markdown-preview-file ()
+  "run Marked on the current file and revert the buffer"
+  (interactive)
+  (shell-command
+   (format "open -a /Applications/Marked.app %s"
+       (shell-quote-argument (buffer-file-name)))))
+
+(eval-after-load 'markdown-mode
+  '(define-key markdown-mode-map (kbd "C-c C-p") 'markdown-preview-file))
+
+;;; colortheme
+(if window-system
+    (load-theme 'solarized-light t)
+    (load-theme 'wombat t))
+
+;;; org-mode
+;; (require 'org)
+;; (require 'ob-clojure)
+;; (setq org-babel-clojure-backend 'cider)
+(add-to-list 'load-path "~/.emacs.d/vendor/org-mode")
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+
+(defun my-org-clocktable-indent-string (level)
+  (if (= level 1)
+      ""
+    (let ((str "^"))
+      (while (> level 2)
+        (setq level (1- level)
+              str (concat str "--")))
+      (concat str "-> "))))
+
+(advice-add 'org-clocktable-indent-string :override #'my-org-clocktable-indent-string)
+
+;;; clojure
+(add-hook 'clojure-mode-hook #'paredit-mode)
+
+;;; pbcopy
+; (require 'pbcopy)
+(turn-on-pbcopy)
+
+;;; xml pretty printer
+;;;  * http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
+(defun xml-pprint-region (begin end)
+  "Pretty format XML markup in region. You need to have nxml-mode
+http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do
+this.  The function inserts linebreaks to separate tags that have
+nothing but whitespace between them.  It then indents the markup
+by using nxml's indentation rules."
+  (interactive "r")
+  (save-excursion
+    (nxml-mode)
+    (goto-char begin)
+    (while (search-forward-regexp "\>[ \\t]*\<" nil t)
+      (backward-char) (insert "\n"))
+    (indent-region begin end))
+  (message "Ah, much better!"))
+
+(defun xml-pprint ()
+  (interactive)
+  (push-mark)
+  (xml-pprint-region (point-min) (point-max)))
+
+;;; graphviz
+;;(setq graphviz-dot-view-command "dot -o $1.png -Tpng $1 && open $1.png")
 
 
-(defun live-welcome-message ()
-  (nth (random (length live-welcome-messages)) live-welcome-messages))
-
-(when live-supported-emacsp
-  (setq initial-scratch-message (concat live-ascii-art-logo " Version " live-version
-                                                                (if live-safe-modep
-                                                                    "
-;;                                                     --*SAFE MODE*--"
-                                                                  "
-;;"
-                                                                  ) "
-;;
-;; "                                                      (live-welcome-message) "
-
-
-(set-default-font \"Menlo-14\")
-
-")))
-)
-
-(if (not live-disable-zone)
-    (add-hook 'term-setup-hook 'zone))
-
-(if (not custom-file)
-    (setq custom-file (concat live-custom-dir "custom-configuration.el")))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-(message "\n\n Pack loading completed. Your Emacs is Live...\n\n")
+;;; Python
+(require 'auto-virtualenv)
+(add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+(add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (nhexl-mode yaml-mode writegood-mode solarized-theme smex rvm powershell php-mode pbcopy paredit nodejs-repl marmalade markdown-mode htmlize haskell-mode graphviz-dot-mode go-eldoc go-autocomplete flycheck ess erlang csharp-mode coffee-mode cider autopair auto-virtualenv ac-slime))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
