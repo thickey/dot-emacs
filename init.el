@@ -10,15 +10,17 @@
 ;;; package management
 (load "package")
 (package-initialize)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("marmalade" . "http://marmalade-repo.org/packages/"))        ; invalid cert
+;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.milkbox.net/packages/") t)           ; down
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
 (defvar thickey/packages '(ac-slime
          auto-complete
          autopair
          clojure-mode
+         inf-clojure
          coffee-mode
          csharp-mode
          erlang
@@ -79,7 +81,7 @@
 
 ;; (scroll-bar-mode -1)
 (tool-bar-mode -1)
-(menu-bar-mode -1)
+(menu-bar-mode t)
 (delete-selection-mode t)
 (transient-mark-mode t)
 (setq x-select-enable-clipboard t)
@@ -94,6 +96,8 @@
       use-dialog-box nil
       visible-bell t)
 (show-paren-mode t)
+(setq visible-bell nil)
+(set-face-attribute 'default nil :height 140)
 
 ;;; smex
 (setq smex-save-file (expand-file-name ".smex-items" user-emacs-directory))
@@ -219,6 +223,11 @@
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 
+(require 'inf-clojure)
+(defun clj-dev-repl ()
+  (interactive)
+  (inf-clojure "clojure -A:dev"))
+
 (defun my-org-clocktable-indent-string (level)
   (if (= level 1)
       ""
@@ -274,7 +283,7 @@ by using nxml's indentation rules."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (nhexl-mode yaml-mode writegood-mode cyberpunk-theme smex rvm powershell php-mode pbcopy paredit nodejs-repl marmalade markdown-mode htmlize haskell-mode graphviz-dot-mode go-eldoc go-autocomplete flycheck ess erlang csharp-mode coffee-mode cider autopair auto-virtualenv ac-slime))))
+    (nhexl-mode yaml-mode writegood-mode cyberpunk-theme smex rvm powershell php-mode pbcopy paredit nodejs-repl marmalade markdown-mode htmlize haskell-mode graphviz-dot-mode go-eldoc go-autocomplete flycheck ess erlang csharp-mode coffee-mode cider inf-clojure autopair auto-virtualenv ac-slime))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
